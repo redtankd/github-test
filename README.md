@@ -1,4 +1,4 @@
-github-test
+github-test [![Build Status](https://travis-ci.org/redtankd/github-test.svg?branch=master)](https://travis-ci.org/redtankd/github-test)
 ===========
 
 test1
