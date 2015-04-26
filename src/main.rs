@@ -1,47 +1,73 @@
 use std::io::{BufReader, BufWriter};
 use std::io::prelude::*;
 use std::net::{TcpListener, TcpStream};
+use std::sync::Arc;
 use std::thread;
 
 fn main() {
+    run_server(handle_client);
+}
 
-    let listener = TcpListener::bind("127.0.0.1:8080").unwrap();
+fn run_server<F>(handle_client: F)
+    // handle_client needs to be shared between threads. 
+    // F's trait constraint is required.
+    where F: 'static + Fn(TcpStream) + Send + Sync {
 
-    fn handle_client(stream: TcpStream) {
-        let writer_stream = stream.try_clone().unwrap();
-        let reader = BufReader::new(stream);
-        let mut writer = BufWriter::new(writer_stream);
+    let handle_client_arc = Arc::new(handle_client);
 
-        for line in reader.lines() {
-            let in_str = line.unwrap();
-            println!("{}", in_str);
-            writer.write_fmt(format_args!("receive: {}\n", in_str.trim()));
-        }
-
-        // let mut in_str = String::new();
-        // let read_size = buffer.read_line(&mut in_str).unwrap();
-        // println!("{}", in_str);
-
-        // buffer.write_fmt(format_args!("receive: {}\nsize: {}\n", in_str.trim(), read_size));
-    }
-
-    // accept connections and process them, spawning a new thread for each one
-    for stream in listener.incoming() {
-        match stream {
-            Ok(stream) => {
-                thread::spawn( move || {
-                    // connection succeeded
-                    handle_client(stream)
-                });
+    match TcpListener::bind("127.0.0.1:8080") {
+        Ok(listener) => {
+            // accept connections and process them, spawning a new thread for each one
+            for stream in listener.incoming() {
+                match stream {
+                    Ok(stream) => {
+                        let handle_client_clone = handle_client_arc.clone();
+                        thread::spawn( move || {
+                            // connection succeeded
+                            handle_client_clone(stream);
+                        });
+                    }
+                    Err(e) => { println!("{}", e); }
+                }
             }
-            Err(e) => { println!("{}", e); }
+
+            // close the socket server
+            drop(listener);
+
+            println!("Exit!");
+        } 
+        Err(e) => {
+            println!("{}", e);
+        }
+    }   
+}
+
+fn handle_client(stream: TcpStream) {
+    // A TcpStream is unable to create BufReader and BufWriter at the same time.
+    // So a cloned TcpStream is needed
+    match stream.try_clone() {
+        Ok(stream_clone) => {
+            let mut writer = BufWriter::new(stream_clone);
+            let reader = BufReader::new(stream);
+            // a simple protocal for string message with line breaks
+            for line in reader.lines() {
+                // error handling in chained Results
+                // see std::result::Result and std::io::Result
+                if let Err(e) = line
+                    // line is Result<String>. The String value is used to call closure
+                    .and_then(|in_str| writer
+                        .write_fmt(format_args!("receive: {}\n", in_str.trim()))
+                    )
+                    .and_then(|()| writer.flush()) {
+                        println!("{}", e);
+                }
+            }
+            println!("one connection is closed");
+        } 
+        Err(e) => {
+            println!("Opening connection is failed. {}", e);    
         }
     }
-
-    // close the socket server
-    drop(listener);
-
-    println!("Hello, world!");
 }
 
 #[cfg(test)]
