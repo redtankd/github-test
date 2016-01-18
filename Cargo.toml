@@ -3,5 +3,5 @@ name = "rust"
 version = "0.0.1"
 authors = ["redtankd <redtankd@qq.com>"]
 
-[dependencies]
-rustc-serialize = "0.3"
+[lib]
+name = "rust"
