@@ -70,12 +70,25 @@ fn handle_client(stream: TcpStream) {
     }
 }
 
+fn one(a: i32) -> i32 {
+    if a > 0 {
+        1
+    } else if a < 0 {
+        -1
+    } else {
+        0
+    }
+}
+
+
 #[cfg(test)]
 mod test {
     use super::*;
 
     #[test]
     fn it_works() {
-        assert_eq!(2, 2);
+        assert_eq!(1, super::one(100));
+        assert_eq!(-1, super::one(-100));
+        assert_eq!(0, super::one(0));
     }
 }
