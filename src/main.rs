@@ -56,7 +56,7 @@ fn handle_client(stream: TcpStream) {
                 if let Err(e) = line
                     // line is Result<String>. The String value is used to call closure
                     .and_then(|in_str| writer
-                        .write_fmt(format_args!("receive: {}\n", in_str.trim()))
+                        .write_all(format!("receive: {}\n", in_str.trim()).as_bytes())
                     )
                     .and_then(|()| writer.flush()) {
                         println!("{}", e);
