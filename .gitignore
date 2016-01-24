@@ -1,1 +1,9 @@
+# for cmake
+build
+
+# for rust
 target
+Cargo.lock
+
+# for sublime
+rust-test.sublime-workspace

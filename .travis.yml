@@ -1,3 +1,5 @@
+sudo: false
+
 language: rust
 
 rust:
@@ -5,8 +7,9 @@ rust:
   # - beta
   # - nightly
 
-sudo: false
-  
+env:
+  - TEST_DIR=code-coverage
+
 before_script: |
   PKGNAME="rust"    # must match with cargo.toml
   LOCAL="~/.local"  # install here to avoid `sudo`
@@ -29,4 +32,4 @@ after_success: |
   kcov --verify \
        --coveralls-id=$TRAVIS_JOB_ID \
        --exclude-pattern=/.cargo \
-       target/kcov target/debug/$PKGNAME-*
+       code-coverage/target/kcov target/debug/$PKGNAME-*
