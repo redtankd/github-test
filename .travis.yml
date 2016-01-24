@@ -13,6 +13,7 @@ env:
   matrix:
     - TEST_DIR="code-coverage"
       PKGNAME="rust"    # must match with cargo.toml
+    - TEST_DIR="syntax"
 
 addons:
   apt:
