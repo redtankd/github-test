@@ -1,5 +1,6 @@
-# for cmake
+# for cmake and gradle
 build
+.gradle
 
 # for rust
 target
