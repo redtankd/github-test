@@ -1,0 +1,8 @@
+[package]
+name = "rust"
+version = "0.0.1"
+authors = ["redtankd <redtankd@qq.com>"]
+
+[lib]
+name = "double_input"
+crate-type = ["dylib"]
