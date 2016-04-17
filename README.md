@@ -24,7 +24,7 @@ My personal configuration files is managed by Git.
 * `gradlew` The recursive wrapper command for gradle. See https://gist.github.com/dougborg/4278116
 * `vpn`
 
----
+--- ---
 # OS X #
 
 ## Homebrew ##
