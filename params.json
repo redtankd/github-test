@@ -1,0 +1,6 @@
+{
+  "name": "Rust-test",
+  "tagline": "",
+  "body": "README\r\n===========\r\n\r\n[![Build Status](https://travis-ci.org/redtankd/rust-test.svg?branch=master)](https://travis-ci.org/redtankd/rust-test) [![Coverage Status](https://coveralls.io/repos/github/redtankd/rust-test/badge.svg?branch=master)](https://coveralls.io/github/redtankd/rust-test?branch=master)\r\n\r\nI'm learning Rust!",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
