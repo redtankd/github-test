@@ -1,6 +1,10 @@
 [package]
-name = "test1"
+name = "miotest"
 version = "0.1.0"
 authors = ["redtankd <redtankd@qq.com>"]
 
+[lib]
+name = "miotest"
+
 [dependencies]
+mio = "0.6"
