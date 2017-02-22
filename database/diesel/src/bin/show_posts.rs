@@ -1,5 +1,6 @@
+extern crate diesel;
+
 extern crate diesel_demo;
-#[macro_use] extern crate diesel;
 
 use self::diesel_demo::*;
 use self::diesel_demo::models::*;
@@ -20,6 +21,4 @@ fn main() {
         println!("----------\n");
         println!("{}", post.body);
     }
-
-    // print_sql!(posts.filter(published.eq(true)).count());
 }

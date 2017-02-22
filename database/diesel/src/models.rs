@@ -1,12 +1,12 @@
-#[derive(Queryable)]
+use super::schema::posts;
+
+#[derive(Queryable, Debug)]
 pub struct Post {
     pub id: i32,
     pub title: String,
     pub body: String,
     pub published: bool,
 }
-
-use super::schema::posts;
 
 #[derive(Insertable)]
 #[table_name="posts"]
