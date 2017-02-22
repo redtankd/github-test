@@ -1,3 +1,5 @@
 CREATE TABLE users (
-  id SERIAL PRIMARY KEY
-)
+  id SERIAL PRIMARY KEY,
+  name VARCHAR NOT NULL,
+  hair_color VARCHAR
+);
