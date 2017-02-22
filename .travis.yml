@@ -14,6 +14,10 @@ env:
     - TEST_DIR="code-coverage"
       PKGNAME="rust"    # must match with cargo.toml
     - TEST_DIR="syntax"
+    - TEST_DIR="database/diesel"
+
+services:
+  - postgresql
 
 addons:
   apt:
@@ -26,6 +30,12 @@ addons:
 before_script: |
   export PATH=$LOCAL/bin:$PATH
   cd $TEST_DIR
+  if [ "$TEST_DIR" = "database/diesel" ]; then
+    psql -h localhost -U postgres -c "create user diesel createdb password 'diesel'"
+    psql -h localhost -U postgres -c "create database diesel with owner diesel"
+    cargo install diesel_cli
+    diesel migration run
+  fi
 
 after_success: |
   if [ "$TEST_DIR" = "code-coverage" ]; then
