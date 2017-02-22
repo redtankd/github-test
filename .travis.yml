@@ -28,7 +28,7 @@ addons:
       - libbfd-dev    # required for `--verify`
 
 before_script: |
-  export PATH=$LOCAL/bin:$PATH
+  export PATH=$LOCAL/bin:~/.cargo/bin:$PATH
   cd $TEST_DIR
   if [ "$TEST_DIR" = "database/diesel" ]; then
     psql -h localhost -U postgres -c "create user diesel createdb password 'diesel'"
