@@ -62,6 +62,6 @@ before_script:
       fi
 
 after_success: |
-  cd ..
+  # cd ..
   # kcov --coveralls-id=$TRAVIS_JOB_ID --verify --include-pattern=$TEST_DIR/src $TEST_DIR/target/cov $TEST_DIR/target/debug/syntax-*
-  cargo kcov --verbose --coveralls --output target --manifest-path $TEST_DIR/Cargo.toml -- --replace-src-path=src/:$TEST_DIR/src/
+  cargo kcov --verbose --coveralls --output ~/cov  #--manifest-path $TEST_DIR/Cargo.toml -- --replace-src-path=src/:$TEST_DIR/src/
