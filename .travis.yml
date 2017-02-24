@@ -64,6 +64,7 @@ before_script:
 after_success: |
   cd ..
   kcov --verify --coveralls-id=$TRAVIS_JOB_ID \
+    --strip-path=$HOME/build/redtankd/rust-test/ \
     --include-path=$TEST_DIR/src \
     cov/ $TEST_DIR/target/debug/syntax-*
   # cargo kcov --verbose -- --verify --coveralls-id=$TRAVIS_JOB_ID \
