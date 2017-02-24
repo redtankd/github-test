@@ -12,7 +12,6 @@ env:
     - LOCAL="~/.local"  # install here to avoid `sudo`
   matrix:
     - TEST_DIR="code-coverage"
-      # PKGNAME="rust"    # must match with cargo.toml
     - TEST_DIR="syntax"
     - TEST_DIR="database/diesel"
 
@@ -22,24 +21,42 @@ services:
 addons:
   apt:
     packages:
-      - binutils-dev
       - libcurl4-openssl-dev
-      - zlib1g-dev
+      - libelf-dev
       - libdw-dev
-      - libiberty-dev
-      # - libelf-dev
-      # - libbfd-dev    # required for `--verify`
+      - binutils-dev
+      #- libiberty-dev # <- no such thing in Ubuntu 12.04
+      - g++
 
-before_install: |
-  wget https://github.com/SimonKagstrom/kcov/archive/v33.tar.gz && 
-      tar xzf v33.tar.gz && 
-      mkdir kcov-33/build && 
-      cd kcov-33/build && 
-      cmake -DCMAKE_INSTALL_PREFIX:PATH=$LOCAL .. && 
-      make && 
-      make install && 
-      cd ../..
-  cargo install cargo-kcov
+install:
+    # 1. Install kcov v33.
+    - export KCOV_VERSION=33
+    - mkdir -p ~/.cargo/bin
+    - |
+        wget https://github.com/SimonKagstrom/kcov/archive/v${KCOV_VERSION}.tar.gz &&
+        tar xzf v${KCOV_VERSION}.tar.gz &&
+        cd kcov-${KCOV_VERSION} &&
+        mkdir build &&
+        cd build &&
+        cmake .. &&
+        make &&
+        cp src/kcov src/libkcov_sowrapper.so ~/.cargo/bin &&
+        cd ../..
+    - export PATH=$HOME/.local/bin:$HOME/.cargo/bin:$HOME/Library/Python/2.7/bin:$PATH
+    - export RUSTFLAGS="-C link-dead-code"
+    - kcov --version
+
+    # 2. Install rustup.
+    - if [ "$TRAVIS_OS_NAME" = 'linux' ]; then OS=unknown-linux-gnu; else OS=apple-darwin; fi
+    - export HOST=$ARCH-$OS
+    - curl -SfLO "https://static.rust-lang.org/rustup/dist/$HOST/rustup-init"
+    - chmod u+x rustup-init
+    - ./rustup-init -y --default-host "$HOST" --default-toolchain "$TRAVIS_RUST_VERSION"
+    - export PATH=$HOME/.cargo/bin:$HOME/.local/bin:$PATH
+    - rustc -vV
+    - cargo -vV
+
+    - cargo install cargo-kcov
 
 before_script: |
   export PATH=$LOCAL/bin:~/.cargo/bin:$PATH
