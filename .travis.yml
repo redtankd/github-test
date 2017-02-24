@@ -63,6 +63,6 @@ before_script:
 
 after_success: |
   cargo kcov --verbose -- --verify --coveralls-id=$TRAVIS_JOB_ID \
-    --strip-path=$HOME/build/redtankd/rust-test/ \
+    --strip-path=$TRAVIS_BUILD_DIR/$TRAVIS_REPO_SLUG \
     --exclude-pattern=/.cargo,target 
     
