@@ -62,8 +62,10 @@ before_script:
       fi
 
 after_success: |
-  # cd ..
-  # kcov --coveralls-id=$TRAVIS_JOB_ID --verify --include-pattern=$TEST_DIR/src $TEST_DIR/target/cov $TEST_DIR/target/debug/syntax-*
-  cargo kcov --verbose -- --replace-src-path=src/:$TEST_DIR/src/ \
-    --verify --exclude-pattern=/.cargo 
-    #--coveralls-id=$TRAVIS_JOB_ID
+  cd ..
+  kcov --verify --coveralls-id=$TRAVIS_JOB_ID \
+    --include-pattern=$TEST_DIR/src \
+    cov/ $TEST_DIR/target/debug/syntax-*
+  # cargo kcov --verbose -- --verify --coveralls-id=$TRAVIS_JOB_ID \
+  #   --exclude-pattern=/.cargo 
+    
