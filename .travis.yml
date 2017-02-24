@@ -31,6 +31,7 @@ addons:
 install:
     - export PATH=$HOME/.local/bin:$HOME/.cargo/bin:$PATH
     - mkdir -p ~/.cargo/bin
+    - mkdir -p ~/.local/bin
 
     # 1. Install kcov v33.
     - export KCOV_VERSION=33
@@ -44,21 +45,22 @@ install:
         make &&
         cp src/kcov src/libkcov_sowrapper.so ~/.cargo/bin &&
         cd ../..
-    - export RUSTFLAGS="-C link-dead-code"
     - kcov --version
 
     # 2. Install cargo-kcov.
     - cargo install cargo-kcov
 
-before_script: |
-  export PATH=$LOCAL/bin:~/.cargo/bin:$PATH
-  cd $TEST_DIR
-  if [ "$TEST_DIR" = "database/diesel" ]; then
-    psql -h localhost -U postgres -c "create user diesel createdb password 'diesel'"
-    psql -h localhost -U postgres -c "create database diesel with owner diesel"
-    cargo install diesel_cli
-    diesel migration run
-  fi
+before_script:
+  - export RUSTFLAGS="-C link-dead-code"
+  - cd $TEST_DIR
+  - |
+      if [ "$TEST_DIR" = "database/diesel" ]; then
+        psql -h localhost -U postgres -c "create user diesel createdb password 'diesel'"
+        psql -h localhost -U postgres -c "create database diesel with owner diesel"
+        cargo install diesel_cli
+        diesel migration run
+      fi
 
 after_success: |
-  cargo kcov --verbose --coveralls
+  cd ..
+  cargo kcov --verbose --coveralls --manifest-path $TEST_DIR/Cargo.toml
