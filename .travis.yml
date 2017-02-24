@@ -47,11 +47,7 @@ install:
     - export RUSTFLAGS="-C link-dead-code"
     - kcov --version
 
-    # 2. Install rust and cargo.
-    - curl https://sh.rustup.rs -sSf | sh
-    - rustup -vV toolchain install stable
-    - rustc -vV
-    - cargo -vV
+    # 2. Install cargo-kcov.
     - cargo install cargo-kcov
 
 before_script: |
