@@ -12,7 +12,7 @@ env:
     - LOCAL="~/.local"  # install here to avoid `sudo`
   matrix:
     - TEST_DIR="code-coverage"
-      PKGNAME="rust"    # must match with cargo.toml
+      # PKGNAME="rust"    # must match with cargo.toml
     - TEST_DIR="syntax"
     - TEST_DIR="database/diesel"
 
@@ -22,10 +22,24 @@ services:
 addons:
   apt:
     packages:
+      - binutils-dev
       - libcurl4-openssl-dev
-      - libelf-dev
+      - zlib1g-dev
       - libdw-dev
-      - libbfd-dev    # required for `--verify`
+      - libiberty-dev
+      # - libelf-dev
+      # - libbfd-dev    # required for `--verify`
+
+before_install: |
+  wget https://github.com/SimonKagstrom/kcov/archive/v33.tar.gz && 
+      tar xzf v33.tar.gz && 
+      mkdir kcov-33/build && 
+      cd kcov-33/build && 
+      cmake -DCMAKE_INSTALL_PREFIX:PATH=$LOCAL .. && 
+      make && 
+      make install && 
+      cd ../..
+  cargo install cargo-kcov
 
 before_script: |
   export PATH=$LOCAL/bin:~/.cargo/bin:$PATH
@@ -38,17 +52,4 @@ before_script: |
   fi
 
 after_success: |
-  if [ "$TEST_DIR" = "code-coverage" ]; then
-    wget https://github.com/SimonKagstrom/kcov/archive/master.tar.gz && 
-      tar xzf master.tar.gz && 
-      mkdir kcov-master/build && 
-      cd kcov-master/build && 
-      cmake -DCMAKE_INSTALL_PREFIX:PATH=$LOCAL .. && 
-      make && 
-      make install && 
-      cd ../.. && 
-      kcov --verify \
-         --coveralls-id=$TRAVIS_JOB_ID \
-         --exclude-pattern=/.cargo \
-         target/kcov target/debug/$PKGNAME-*
-  fi
+  cargo kcov --verbose --coveralls
