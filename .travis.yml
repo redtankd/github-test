@@ -29,29 +29,36 @@ addons:
       - g++
 
 install:
-    - export PATH=$HOME/.local/bin:$HOME/.cargo/bin:$PATH
+    - export PATH=$LOCAL/bin:$HOME/.cargo/bin:$PATH
+    - mkdir -p $LOCAL/bin
     - mkdir -p ~/.cargo/bin
-    - mkdir -p ~/.local/bin
 
-    # 1. Install kcov v33.
-    - export KCOV_VERSION=33
+    # 1. Install kcov
+    - export SRC_DIR_KCOV=~/kcov-src
+    - export URL_GIT_KCOV=https://github.com/SimonKagstrom/kcov.git
     - |
-        wget https://github.com/SimonKagstrom/kcov/archive/v${KCOV_VERSION}.tar.gz &&
-        tar xzf v${KCOV_VERSION}.tar.gz &&
-        cd kcov-${KCOV_VERSION} &&
-        mkdir build &&
-        cd build &&
-        cmake .. &&
-        make &&
-        cp src/kcov src/libkcov_sowrapper.so ~/.cargo/bin &&
-        cd ../..
-    - kcov --version
+        git clone $URL_GIT_KCOV $SRC_DIR_KCOV
+        cd $SRC_DIR_KCOV
+
+        # default to latest tagged version
+        DEFAULT_KCOV_GIT_REF=$(git tag --list | grep "^v[0-9]\+$" | sort -V | tail --lines 1)
+        KCOV_GIT_REF=${KCOV_GIT_REF:-$DEFAULT_KCOV_GIT_REF}
+        git reset --hard $KCOV_GIT_REF;
+
+        cd $SRC_DIR_KCOV && 
+          mkdir build && 
+          cd build && 
+          cmake -DCMAKE_INSTALL_PREFIX=$LOCAL .. && 
+          make && 
+          make install
+    - cd $TRAVIS_BUILD_DIR
 
     # 2. Install cargo-kcov.
     - cargo install cargo-kcov
 
 before_script:
   - export RUSTFLAGS="-C link-dead-code"
+  - cd $TRAVIS_BUILD_DIR
   - cd $TEST_DIR
   - |
       if [ "$TEST_DIR" = "database/diesel" ]; then

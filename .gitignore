@@ -8,3 +8,7 @@ Cargo.lock
 
 # for sublime
 rust-test.sublime-workspace
+
+# for idea
+.idea
+*.iml
