@@ -71,5 +71,6 @@ before_script:
 after_success: |
   cargo kcov --verbose -- --verify --coveralls-id=$TRAVIS_JOB_ID \
     --strip-path=$TRAVIS_BUILD_DIR \
-    --exclude-pattern=/.cargo,target 
+    --exclude-pattern=/.cargo,target \
+    --exclude-region='#[cfg(test)]://[cfg(test)]'
     
