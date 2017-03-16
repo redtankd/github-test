@@ -37,9 +37,15 @@ impl Post {
     }
 }
 
-#[derive(Insertable)]
+#[derive(PartialEq, Eq, Debug, Clone, Insertable, Queryable)]
 #[table_name="posts"]
-pub struct NewPost<'a> {
-    pub title: &'a str,
-    pub body: &'a str,
+pub struct NewPost {
+    pub title: String, 
+    pub body: String,
 }
+
+// select doesn't support &str
+// pub struct NewPost<'a> {
+//     pub title: &'a str,
+//     pub body: &'a str,
+// }
