@@ -13,6 +13,7 @@ env:
   matrix:
     - TEST_DIR="code-coverage"
     - TEST_DIR="syntax"
+    - TEST_DIR="async/futures"
     - TEST_DIR="database/diesel"
     - TEST_DIR="database/postgres"
 
