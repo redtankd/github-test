@@ -55,11 +55,12 @@ install:
 
 before_script:
   - export RUSTFLAGS="-C link-dead-code"
-  - cd $TRAVIS_BUILD_DIR
   - psql -h localhost -U postgres -c "create user diesel createdb password 'diesel'"
   - psql -h localhost -U postgres -c "create database diesel with owner diesel"
   - cargo install diesel_cli
+  - cd $TRAVIS_BUILD_DIR／database/diesel
   - diesel migration run
+  - cd $TRAVIS_BUILD_DIR
 
 script:
   - cargo test --all
