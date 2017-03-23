@@ -57,3 +57,7 @@ diesel migration run
 ## Where is more examples
 
 https://github.com/diesel-rs/diesel/tree/master/diesel_tests
+
+## Where is the file ".env"
+
+Since it is in a cargo workspace, so .env is in workspace's root.

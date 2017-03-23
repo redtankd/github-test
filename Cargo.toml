@@ -1,0 +1,17 @@
+[workspace]
+
+members = [
+	"syntax", 
+
+	"ffi/cpp-rust-ffi/common-rust",
+	"ffi/java-rust-ffi/rust",
+	"ffi/nodejs-rust-ffi/rust",
+	"ffi/rust-c-ffi/",
+
+	"net/std",
+	"database/diesel",
+	"database/postgres",
+	"async/futures",
+
+	"code-coverage"
+]

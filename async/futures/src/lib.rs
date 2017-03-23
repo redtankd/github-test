@@ -14,10 +14,10 @@ mod tests {
 
     #[test]
     fn executor_cpupool() {
-        
+
         struct Myfuture {
             timer: Timer,
-            guard: Option<Guard>
+            guard: Option<Guard>,
         };
 
         impl Future for Myfuture {
@@ -25,33 +25,36 @@ mod tests {
             type Error = ();
 
             fn poll(&mut self) -> Poll<Self::Item, Self::Error> {
-                
+
                 if self.guard.is_some() {
                     println!("\nMyfuture: I am ready");
-                    return Ok(Async::Ready(true)); 
+                    return Ok(Async::Ready(true));
                 } else {
-                    println!("\nMyfuture: I am not ready");   
-                    let task = task::park();             
-                    self.guard = Some(self.timer.schedule_with_delay(Duration::seconds(1), move || {
-                        task.unpark();
-                    }));
+                    println!("\nMyfuture: I am not ready");
+                    let task = task::park();
+                    self.guard = Some(self.timer.schedule_with_delay(Duration::seconds(1),
+                                                                     move || { task.unpark(); }));
                     return Ok(Async::NotReady);
                 }
             }
         }
 
         let pool = CpuPool::new(1);
-        assert_eq!(true, 
-            pool.spawn(Myfuture{ timer: Timer::new(), guard: None }).wait().unwrap()
-        );
+        assert_eq!(true,
+                   pool.spawn(Myfuture {
+                                  timer: Timer::new(),
+                                  guard: None,
+                              })
+                       .wait()
+                       .unwrap());
     }
 
     #[test]
     fn executor_thread() {
-        
+
         struct Myfuture {
             timer: Timer,
-            guard: Option<Guard>
+            guard: Option<Guard>,
         };
 
         impl Future for Myfuture {
@@ -59,33 +62,36 @@ mod tests {
             type Error = ();
 
             fn poll(&mut self) -> Poll<Self::Item, Self::Error> {
-                
+
                 if self.guard.is_some() {
                     println!("\nMyfuture: I am ready");
-                    return Ok(Async::Ready(true)); 
+                    return Ok(Async::Ready(true));
                 } else {
-                    println!("\nMyfuture: I am not ready");   
-                    let task = task::park();             
-                    self.guard = Some(self.timer.schedule_with_delay(Duration::seconds(1), move || {
-                        task.unpark();
-                    }));
+                    println!("\nMyfuture: I am not ready");
+                    let task = task::park();
+                    self.guard = Some(self.timer.schedule_with_delay(Duration::seconds(1),
+                                                                     move || { task.unpark(); }));
                     return Ok(Async::NotReady);
                 }
             }
         }
 
-        
-        assert_eq!(true, 
-            (Myfuture{ timer: Timer::new(), guard: None }).wait().unwrap()
-        );
+
+        assert_eq!(true,
+                   (Myfuture {
+                            timer: Timer::new(),
+                            guard: None,
+                        })
+                       .wait()
+                       .unwrap());
     }
 
     #[test]
     fn executor_eventloop() {
-        
+
         struct Myfuture {
             timer: Timer,
-            guard: Option<Guard>
+            guard: Option<Guard>,
         };
 
         impl Future for Myfuture {
@@ -93,16 +99,15 @@ mod tests {
             type Error = ();
 
             fn poll(&mut self) -> Poll<Self::Item, Self::Error> {
-                
+
                 if self.guard.is_some() {
                     println!("\nMyfuture: I am ready");
-                    return Ok(Async::Ready(())); 
+                    return Ok(Async::Ready(()));
                 } else {
-                    println!("\nMyfuture: I am not ready");   
-                    let task = task::park();             
-                    self.guard = Some(self.timer.schedule_with_delay(Duration::seconds(1), move || {
-                        task.unpark();
-                    }));
+                    println!("\nMyfuture: I am not ready");
+                    let task = task::park();
+                    self.guard = Some(self.timer.schedule_with_delay(Duration::seconds(1),
+                                                                     move || { task.unpark(); }));
                     return Ok(Async::NotReady);
                 }
             }
@@ -111,12 +116,27 @@ mod tests {
         // Create the event loop
         let mut core = ::tokio_core::reactor::Core::new().unwrap();
 
-        core.handle().spawn(Myfuture{ timer: Timer::new(), guard: None });
+        core.handle().spawn(Myfuture {
+                                timer: Timer::new(),
+                                guard: None,
+                            });
 
         // run the event loop
-        core.run(
-            ::tokio_timer::Timer::default().sleep(::std::time::Duration::from_millis(1200))
-        ).unwrap();
+        core.run(::tokio_timer::Timer::default().sleep(::std::time::Duration::from_millis(1200)))
+            .unwrap();
+    }
+
+    #[test]
+    fn job_on_time() {
+        assert_eq!(1,
+                   ::tokio_timer::Timer::default()
+                       .sleep(::std::time::Duration::from_millis(1200))
+                       .map(|x| {
+                                assert_eq!((), x);
+                                1
+                            })
+                       .wait()
+                       .unwrap());
     }
 }
 //[cfg(test)]

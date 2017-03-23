@@ -1,5 +1,6 @@
 extern crate postgres;
 #[macro_use] extern crate serde_json;
+extern crate dotenv;
 
 use postgres::{Connection, TlsMode};
 use postgres::rows::{Rows};
@@ -53,10 +54,15 @@ fn _column_to_json<T: FromSql>(rows: &Rows, column_name: &str,
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::env;
+    use dotenv::dotenv;
 
     #[test]
     fn json() {
-        let conn = Connection::connect("postgres://diesel:diesel@localhost", TlsMode::None).unwrap();
+    	dotenv().ok();
+    	let database_url = env::var("POSTGRES_URL")
+        	.expect("POSTGRES_URL must be set");
+        let conn = Connection::connect(database_url, TlsMode::None).unwrap();
         conn.execute("drop TABLE person", &[]).unwrap_or(0);
 	    conn.execute("CREATE TABLE person (
 	                    id              SERIAL PRIMARY KEY,

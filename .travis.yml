@@ -11,11 +11,6 @@ env:
   global:
     - LOCAL="~/.local"  # install here to avoid `sudo`
   matrix:
-    - TEST_DIR="code-coverage"
-    - TEST_DIR="syntax"
-    - TEST_DIR="async/futures"
-    - TEST_DIR="database/diesel"
-    - TEST_DIR="database/postgres"
 
 services:
   - postgresql
@@ -61,22 +56,31 @@ install:
 before_script:
   - export RUSTFLAGS="-C link-dead-code"
   - cd $TRAVIS_BUILD_DIR
-  - cd $TEST_DIR
-  - |
-      if [ "${TEST_DIR:0:8}" = "database" ]; then 
-        psql -h localhost -U postgres -c "create user diesel createdb password 'diesel'"
-        psql -h localhost -U postgres -c "create database diesel with owner diesel"
-      fi
-  - |
-      if [ "$TEST_DIR" = "database/diesel" ]; then
-        cargo install diesel_cli
-        diesel migration run
-      fi
+  - psql -h localhost -U postgres -c "create user diesel createdb password 'diesel'"
+  - psql -h localhost -U postgres -c "create database diesel with owner diesel"
+  - cargo install diesel_cli
+  - diesel migration run
 
+script:
+  - cargo test --all
 
 after_success: |
-  cargo kcov --verbose -- --verify --coveralls-id=$TRAVIS_JOB_ID \
-    --strip-path=$TRAVIS_BUILD_DIR \
-    --exclude-pattern=/.cargo,target \
-    --exclude-region='#[cfg(test)]://[cfg(test)]'
-    
+  for TEST_DIR in \
+    "syntax"                       \
+    "ffi/cpp-rust-ffi/common-rust" \
+    "ffi/java-rust-ffi/rust"       \
+    "ffi/nodejs-rust-ffi/rust"     \
+    "ffi/rust-c-ffi/"              \
+    "net/std"                      \
+    "database/diesel"              \
+    "database/postgres"            \
+    "async/futures"                \
+    "code-coverage"                \
+  ; do
+    echo ${TRAVIS_BUILD_DIR}/${TEST_DIR}
+    cd ${TRAVIS_BUILD_DIR}/${TEST_DIR}
+    cargo kcov --verbose -- --verify --coveralls-id=$TRAVIS_JOB_ID \
+        --strip-path=$TRAVIS_BUILD_DIR \
+        --exclude-pattern=/.cargo,target \
+        --exclude-region='#[cfg(test)]://[cfg(test)]'
+  done

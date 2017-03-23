@@ -24,7 +24,7 @@ add_dependencies(example rust_example)
 
 # Specify Example's link libraries
 target_link_libraries(example
-    debug "${CMAKE_SOURCE_DIR}/common-rust/target/debug/librust_example.a"
-    optimized "${CMAKE_SOURCE_DIR}/common-rust/target/release/librust_example.a")
+    debug "${CMAKE_SOURCE_DIR}/../../target/debug/librust_example.a"
+    optimized "${CMAKE_SOURCE_DIR}/../../target/release/librust_example.a")
 
 set_target_properties(example PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON)
