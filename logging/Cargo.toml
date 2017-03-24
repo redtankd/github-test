@@ -1,0 +1,9 @@
+[package]
+name = "log_with_env"
+version = "0.1.0"
+authors = ["redtankd <redtankd@qq.com>"]
+
+[dependencies]
+log = "0.3"
+env_logger = "0.4"
+log4rs = "0.6"

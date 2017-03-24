@@ -13,5 +13,6 @@ members = [
 	"database/postgres",
 	"async/futures",
 
+	"log",
 	"code-coverage"
 ]
