@@ -47,11 +47,12 @@ install:
           cd build && 
           cmake -DCMAKE_INSTALL_PREFIX=$LOCAL .. && 
           make && 
-          make install
+          make install &&
+          kcov --version
     - cd $TRAVIS_BUILD_DIR
 
     # 2. Install cargo-kcov.
-    - cargo install cargo-kcov
+    # - cargo install cargo-kcov
 
 before_script:
   - export RUSTFLAGS="-C link-dead-code"
@@ -66,7 +67,8 @@ script:
   - cargo test --all
 
 after_success: |
-  for TEST_FILE in `find target/debug/ -maxdepth 1 -executable -type f`; do
+  # for TEST_FILE in `find target/debug/ -maxdepth 1 -executable -type f`; do
+  for TEST_FILE in `find target/debug/ -maxdepth 1 -name "rust-*" -executable -type f`; do
     echo TEST_FILE = $TEST_FILE
     kcov --verify \
       --coveralls-id=$TRAVIS_JOB_ID \
