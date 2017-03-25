@@ -66,25 +66,13 @@ script:
   - cargo test --all
 
 after_success: |
-  for TEST_DIR in \
-    "syntax"                       \
-    "ffi/cpp-rust-ffi/common-rust" \
-    "ffi/java-rust-ffi/rust"       \
-    "ffi/nodejs-rust-ffi/rust"     \
-    "ffi/rust-c-ffi/"              \
-    "net/std"                      \
-    "database/diesel"              \
-    "database/postgres"            \
-    "async/futures"                \
-    "code-coverage"                \
-  ; do
-    echo ${TRAVIS_BUILD_DIR}/${TEST_DIR}
-    cd ${TRAVIS_BUILD_DIR}/${TEST_DIR}
-    cargo kcov --verbose -- --verify --coveralls-id=$TRAVIS_JOB_ID \
-        --strip-path=$TRAVIS_BUILD_DIR \
-        --exclude-pattern=/.cargo,target 
-        
+  for TEST_FILE in `find target/debug/ -maxdepth 1 -executable -type f`; do
+    echo TEST_FILE = $TEST_FILE
+    kcov --verify \
+      --coveralls-id=$TRAVIS_JOB_ID \
+      --strip-path=$TRAVIS_BUILD_DIR \
+      --exclude-pattern=/.cargo,target \
+      --exclude-region='#[cfg(test)]://[cfg(test)]' \
+      $TRAVIS_BUILD_DIR/target/cov \
+      $TEST_FILE
   done
-
-# \
-# --exclude-region='#[cfg(test)]://[cfg(test)]'
