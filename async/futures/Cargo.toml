@@ -1,10 +1,10 @@
 [package]
-name = "futures"
+name = "futures-test"
 version = "0.1.0"
 authors = ["redtankd <redtankd@qq.com>"]
 
 [lib]
-name = "futures"
+name = "futures_test"
 
 [dependencies]
 futures = "0.1"
