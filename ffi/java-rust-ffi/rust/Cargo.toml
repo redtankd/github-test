@@ -3,5 +3,5 @@ name = "java-to-rust"
 version = "0.1.0"
 
 [lib]
-name = "double_input"
+name = "java_rust_ffi"
 crate-type = ["dylib"]

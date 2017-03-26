@@ -1,5 +1,5 @@
 [package]
-name = "test"
+name = "std_net"
 version = "0.1.0"
 authors = ["redtankd <redtankd@qq.com>"]
 

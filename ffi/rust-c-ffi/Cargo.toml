@@ -1,5 +1,5 @@
 [package]
-name = "example"
+name = "rust_c_ffi"
 version = "0.1.0"
 authors = ["redtankd <redtankd@qq.com>"]
 

@@ -3,5 +3,5 @@ name = "rust_example"
 version = "0.1.0"
 
 [lib]
-name = "rust_example"
+name = "cpp_rust_ffi"
 crate-type = ["staticlib"]

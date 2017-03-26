@@ -67,14 +67,4 @@ script:
   - cargo test --all
 
 after_success: |
-  # for TEST_FILE in `find target/debug/ -maxdepth 1 -executable -type f`; do
-  for TEST_FILE in `find target/debug/ -maxdepth 1 -name "rust-*" -executable -type f`; do
-    echo TEST_FILE = $TEST_FILE
-    kcov --verify \
-      --coveralls-id=$TRAVIS_JOB_ID \
-      --strip-path=$TRAVIS_BUILD_DIR \
-      --exclude-pattern=/.cargo,target \
-      --exclude-region='#[cfg(test)]://[cfg(test)]' \
-      $TRAVIS_BUILD_DIR/target/cov \
-      $TEST_FILE
-  done
+  ./kcov.sh  

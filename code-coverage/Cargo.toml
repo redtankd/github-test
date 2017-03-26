@@ -4,4 +4,4 @@ version = "0.0.1"
 authors = ["redtankd <redtankd@qq.com>"]
 
 [lib]
-name = "rust"
+name = "code_coverage"
