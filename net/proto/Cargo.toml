@@ -1,0 +1,10 @@
+[package]
+name = "proto"
+version = "0.1.0"
+authors = ["redtankd <redtankd@qq.com>"]
+
+[dependencies]
+protobuf = "1.4.1"
+
+[build-dependencies]
+protoc-rust = "1.4.1"
