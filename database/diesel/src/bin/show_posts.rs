@@ -1,10 +1,8 @@
-extern crate diesel;
+#![feature(rust_2018_preview)]
 
-extern crate diesel_demo;
-
-use self::diesel_demo::*;
-use self::diesel_demo::models::*;
-use self::diesel::prelude::*;
+use diesel_demo::*;
+use diesel_demo::models::*;
+use diesel::prelude::*;
 
 fn main() {
     use diesel_demo::schema::posts::dsl::*;

@@ -1,7 +1,7 @@
-use super::schema::*;
+use super::schema::posts;
+use super::schema::users;
 
-#[derive(PartialEq, Eq, Debug, Clone, Queryable, Identifiable, Insertable, AsChangeset, Associations)]
-#[has_many(posts)]
+#[derive(PartialEq, Eq, Debug, Clone, Queryable, QueryableByName, Identifiable, Insertable, AsChangeset)]
 #[table_name = "users"]
 pub struct User {
     pub id: i32,
@@ -37,7 +37,7 @@ impl Post {
     }
 }
 
-#[derive(PartialEq, Eq, Debug, Clone, Insertable, Queryable)]
+#[derive(PartialEq, Eq, Debug, Clone, Insertable, QueryableByName)]
 #[table_name="posts"]
 pub struct NewPost {
     pub title: String, 

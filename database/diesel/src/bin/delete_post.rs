@@ -1,8 +1,7 @@
-extern crate diesel_demo;
-extern crate diesel;
+#![feature(rust_2018_preview)]
 
-use self::diesel::prelude::*;
-use self::diesel_demo::*;
+use diesel::prelude::*;
+use diesel_demo::*;
 use std::env::args;
 
 fn main() {

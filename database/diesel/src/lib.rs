@@ -1,8 +1,7 @@
+#![feature(rust_2018_preview)]
+
 #[macro_use]
 extern crate diesel;
-#[macro_use]
-extern crate diesel_codegen;
-extern crate dotenv;
 
 pub mod schema;
 pub mod models;
@@ -30,14 +29,15 @@ pub fn establish_connection() -> MyConnection {
 }
 
 pub fn create_post<'a>(conn: &MyConnection, title: &'a str, body: &'a str) -> Post {
-    use schema::posts;
+    use crate::schema::posts;
 
     let new_post = NewPost {
         title: title.to_string(),
         body: body.to_string(),
     };
 
-    diesel::insert(&new_post).into(posts::table)
+    diesel::insert_into(posts::table)
+        .values(&new_post)
         .get_result(conn)
         .expect("Error saving new post")
 }
@@ -92,23 +92,20 @@ mod tests {
                 (2, 2, 'World', 'Content')")
             .unwrap();
 
-        use diesel::expression::sql_literal::sql;
-
         let sean = User::new(1, "Sean");
         let tess = User::new(2, "Tess");
         let expected_data = vec![sean, tess];
         
-        let query = sql("select * from users");
-        let actual_data: Vec<_> = query.get_results(&connection).unwrap();
+        let actual_data = diesel::sql_query("select * from users")
+            .get_results(&connection).unwrap();
 
         assert_eq!(expected_data, actual_data);
 
-        let seans_post = NewPost{title: "Content".to_string(), body: "Hello".to_string()};
-        let tess_post = NewPost{title: "Content".to_string(), body: "World".to_string()};
+        let seans_post = NewPost{title: "Hello".to_string(), body: "Content".to_string()};
+        let tess_post =  NewPost{title: "World".to_string(), body: "Content".to_string()};
         let expected_data = vec![seans_post, tess_post];
 
-        let query = sql("select body, title from posts");
-        let actual_data: Vec<_> = query
+        let actual_data = diesel::sql_query("select body, title from posts")
             .get_results(&connection).unwrap();
 
         assert_eq!(expected_data, actual_data);        

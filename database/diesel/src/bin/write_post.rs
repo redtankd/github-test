@@ -1,8 +1,8 @@
-extern crate diesel_demo;
-extern crate diesel;
+#![feature(rust_2018_preview)]
 
-use self::diesel_demo::*;
 use std::io::{stdin, Read};
+
+use diesel_demo::*;
 
 fn main() {
     let connection = establish_connection();
