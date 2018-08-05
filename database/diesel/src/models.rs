@@ -1,7 +1,9 @@
 use super::schema::posts;
 use super::schema::users;
 
-#[derive(PartialEq, Eq, Debug, Clone, Queryable, QueryableByName, Identifiable, Insertable, AsChangeset)]
+#[derive(
+    PartialEq, Eq, Debug, Clone, Queryable, QueryableByName, Identifiable, Insertable, AsChangeset,
+)]
 #[table_name = "users"]
 pub struct User {
     pub id: i32,
@@ -11,7 +13,11 @@ pub struct User {
 
 impl User {
     pub fn new(id: i32, name: &str) -> Self {
-        User { id: id, name: name.to_string(), hair_color: None }
+        User {
+            id: id,
+            name: name.to_string(),
+            hair_color: None,
+        }
     }
 }
 
@@ -22,7 +28,7 @@ pub struct Post {
     pub title: String,
     pub body: String,
     pub published: bool,
-    pub user_id: i32
+    pub user_id: i32,
 }
 
 impl Post {
@@ -32,15 +38,15 @@ impl Post {
             user_id: user_id,
             title: title.to_string(),
             body: body.to_string(),
-            published: false
+            published: false,
         }
     }
 }
 
 #[derive(PartialEq, Eq, Debug, Clone, Insertable, QueryableByName)]
-#[table_name="posts"]
+#[table_name = "posts"]
 pub struct NewPost {
-    pub title: String, 
+    pub title: String,
     pub body: String,
 }
 

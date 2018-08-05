@@ -3,16 +3,18 @@
 members = [
 	"syntax", 
 
+	"net/std",
+
+	"async/futures",
+
 	"ffi/cpp-rust-ffi/common-rust",
 	"ffi/java-rust-ffi/rust",
 	"ffi/nodejs-rust-ffi/rust",
 	"ffi/rust-c-ffi/",
 
-	"net/std",
-	"database/diesel",
-	"database/postgres",
-	"async/futures",
-
 	"logging",
-	"code-coverage"
+	"code-coverage",
+
+	"database/diesel",
+	"database/postgres"
 ]
