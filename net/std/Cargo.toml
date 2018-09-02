@@ -1,4 +1,7 @@
+cargo-features = ["edition"]
+
 [package]
+edition = "2018"
 name = "std_net"
 version = "0.1.0"
 authors = ["redtankd <redtankd@qq.com>"]
