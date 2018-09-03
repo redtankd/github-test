@@ -3,9 +3,9 @@ sudo: false
 language: rust
 
 rust:
-  - stable
+  # - stable
   # - beta
-  # - nightly
+  - nightly
 
 env:
   global:
