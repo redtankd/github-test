@@ -1,0 +1,16 @@
+cargo-features = ["edition", "rename-dependency"]
+
+[package]
+edition = "2018"
+name = "futures-test"
+version = "0.1.0"
+authors = ["redtankd <redtankd@qq.com>"]
+
+[lib]
+name = "futures_test"
+
+[dependencies]
+futures-preview = { version = "0.3.0-alpha.5", features = ["tokio-compat","compat"] }
+tokio = "0.1"
+timer = "0.2"
+chrono = "0.4"

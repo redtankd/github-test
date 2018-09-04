@@ -3,10 +3,10 @@
 members = [
 	"syntax", 
 
-	"net/std",
+	"future",
 
-	"async/futures",
-
+	"net/sync",
+	
 	"ffi/cpp-rust-ffi/common-rust",
 	"ffi/java-rust-ffi/rust",
 	"ffi/nodejs-rust-ffi/rust",

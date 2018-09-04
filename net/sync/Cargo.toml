@@ -2,7 +2,7 @@ cargo-features = ["edition"]
 
 [package]
 edition = "2018"
-name = "std_net"
+name = "net-sync"
 version = "0.1.0"
 authors = ["redtankd <redtankd@qq.com>"]
 
