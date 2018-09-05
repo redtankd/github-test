@@ -82,18 +82,20 @@ mod tests {
             }.map(|x| {
                 assert_eq!(true, x);
                 ()
-            }).boxed()
+            })
             .unit_error()
             // convert futures 0.3 into 0.1 with TryFuture
             .compat(TokioDefaultSpawner),
         );
     }
 
-    // #[test]
+    #[test]
+    #[should_panic]
     fn job_on_time() {
         let when = Instant::now() + Duration::from_millis(100);
         assert_eq!(
             1,
+            // Tokio 0.1's Future doesn't work in Futures 0.3's executor now.
             block_on(Delay::new(when).compat().map(|x| {
                 assert_eq!((), x.unwrap());
                 1

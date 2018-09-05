@@ -4,6 +4,6 @@ version = "0.1.0"
 authors = ["redtankd <redtankd@qq.com>"]
 
 [dependencies]
-log = "0.3"
-env_logger = "0.4"
-log4rs = "0.6"
+log = "0.4"
+env_logger = "0.5"
+log4rs = "0.8.0"

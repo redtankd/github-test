@@ -6,6 +6,7 @@ members = [
 	"future",
 
 	"net/sync",
+	"net/async",
 	
 	"ffi/cpp-rust-ffi/common-rust",
 	"ffi/java-rust-ffi/rust",
