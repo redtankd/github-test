@@ -1,7 +1,6 @@
 #![feature(await_macro, async_await, futures_api)]
 
 use tokio::await;
-
 use tokio::net::{TcpListener, TcpStream};
 use tokio::prelude::*;
 

@@ -1,5 +1,3 @@
-#![feature(rust_2018_preview)]
-
 use std::io::{stdin, Read};
 
 use diesel_demo::*;

@@ -9,11 +9,11 @@
 #[cfg(test)]
 mod tests {
     use std::future::Future;
-    use std::pin::{PinMut, Unpin};
-    use std::task::{Context, Poll};
+    use std::pin::{Pin, Unpin};
+    use std::task::{LocalWaker, Poll};
     use std::time::{Duration, Instant};
 
-    use futures::compat::{Future01CompatExt, TokioDefaultSpawner};
+    use futures::compat::Future01CompatExt;
     use futures::executor::{block_on, ThreadPoolBuilder};
     use futures::prelude::{FutureExt, TryFutureExt};
     use tokio::timer::Delay;
@@ -30,15 +30,14 @@ mod tests {
     impl Future for Myfuture {
         type Output = bool;
 
-        fn poll(self: PinMut<Self>, ctx: &mut Context) -> Poll<Self::Output> {
+        fn poll(self: Pin<&mut Self>, lw: &LocalWaker) -> Poll<Self::Output> {
             if self.guard.is_some() {
                 println!("\nMyfuture: I am ready");
                 return Poll::Ready(true);
             } else {
                 println!("\nMyfuture: I am not ready");
-                let waker = ctx.waker().clone();
-                // (&mut *self)
-                PinMut::get_mut(self).guard = Some(self.timer.schedule_with_delay(
+                let waker = lw.clone().into_waker();
+                Pin::get_mut(self).guard = Some(self.timer.schedule_with_delay(
                     chrono::Duration::seconds(1),
                     move || {
                         waker.wake();
@@ -79,13 +78,14 @@ mod tests {
             Myfuture {
                 timer: Timer::new(),
                 guard: None,
-            }.map(|x| {
+            }
+            .map(|x| {
                 assert_eq!(true, x);
                 ()
             })
             .unit_error()
             // convert futures 0.3 into 0.1 with TryFuture
-            .compat(TokioDefaultSpawner),
+            .compat(),
         );
     }
 

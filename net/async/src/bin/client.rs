@@ -1,12 +1,11 @@
 #![feature(await_macro, async_await, futures_api)]
 
-use tokio::await;
-
-use tokio::net::TcpStream;
-use tokio::prelude::*;
-
 use std::io;
 use std::net::SocketAddr;
+
+use tokio::await;
+use tokio::net::TcpStream;
+use tokio::prelude::*;
 
 const MESSAGES: &[&str] = &[
     "hello",
@@ -16,6 +15,7 @@ const MESSAGES: &[&str] = &[
 
 async fn run_client(addr: &SocketAddr) -> io::Result<()> {
     let mut stream = await!(TcpStream::connect(addr))?;
+    println!("Connected");
 
     // Buffer to read into
     let mut buf = [0; 128];
@@ -27,7 +27,7 @@ async fn run_client(addr: &SocketAddr) -> io::Result<()> {
         await!(stream.write_all_async(msg.as_bytes()))?;
 
         // Read the message back from the server
-        await!(stream.read_exact_async(&mut buf[..msg.len()]))?;
+        await!(stream.read_async(&mut buf))?;
 
         assert_eq!(&buf[..msg.len()], msg.as_bytes());
     }

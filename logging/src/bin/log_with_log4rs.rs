@@ -1,7 +1,7 @@
 #[macro_use] extern crate log;
 extern crate log4rs;
 
-use log::LogLevel;
+use log::Level;
 
 fn main() {
     //TODO log4rs.yml is required in working dir.
@@ -15,12 +15,12 @@ fn main() {
 
     target::log();
 
-    if log_enabled!(LogLevel::Info) {
+    if log_enabled!(Level::Info) {
         let x = 3 * 4; // expensive computation
         info!("the answer was: {}", x);
     }
 
-    info!("the log level was: {:?}", log::max_log_level());
+    info!("the log level was: {:?}", log::max_level());
 }
 
 mod target {

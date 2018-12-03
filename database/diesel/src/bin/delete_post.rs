@@ -1,5 +1,3 @@
-#![feature(rust_2018_preview)]
-
 use diesel::prelude::*;
 use diesel_demo::*;
 use std::env::args;

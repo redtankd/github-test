@@ -1,11 +1,12 @@
-cargo-features = ["edition"]
-
 [package]
+
 edition = "2018"
-name = "tokio-async"
+name = "server"
 version = "0.1.0"
 authors = ["redtankd <redtankd@qq.com>"]
 
 [dependencies]
-tokio-async-await = "0.1.0"
-futures-util-preview = "0.3.0-alpha.5"
+
+futures-preview = { version = "0.3.0-alpha.7", features = ["tokio-compat","compat"] }
+
+tokio = { version = "0.1.0", features = ["async-await-preview"] }

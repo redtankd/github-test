@@ -1,10 +1,10 @@
 #[macro_use] extern crate log;
 extern crate env_logger;
 
-use log::LogLevel;
+use log::Level;
 
 fn main() {
-    env_logger::init().unwrap();
+    env_logger::init();
 
     trace!("this is a trace {}", "message");
     debug!("this is a debug {}", "message");
@@ -14,12 +14,12 @@ fn main() {
 
     target::log();
 
-    if log_enabled!(LogLevel::Info) {
+    if log_enabled!(Level::Info) {
         let x = 3 * 4; // expensive computation
         info!("the answer was: {}", x);
     }
 
-    info!("the log level was: {:?}", log::max_log_level());
+    info!("the log level was: {:?}", log::max_level());
 }
 
 mod target {
