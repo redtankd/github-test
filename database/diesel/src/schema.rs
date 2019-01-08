@@ -1,18 +1,18 @@
 table! {
     posts (id) {
-        id -> Integer,
-        title -> Text,
+        id -> Int4,
+        title -> Varchar,
         body -> Text,
         published -> Bool,
-        user_id -> Integer,
+        user_id -> Int4,
     }
 }
 
 table! {
     users (id) {
-        id -> Integer,
-        name -> Text,
-        hair_color -> Nullable<Text>,
+        id -> Int4,
+        name -> Varchar,
+        hair_color -> Nullable<Varchar>,
     }
 }
 
