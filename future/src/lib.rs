@@ -1,15 +1,9 @@
-#![feature(
-    async_await,
-    await_macro,
-    futures_api,
-    pin,
-    arbitrary_self_types
-)]
+#![feature(async_await, await_macro, futures_api, arbitrary_self_types)]
 
 #[cfg(test)]
 mod tests {
     use std::future::Future;
-    use std::pin::{Pin, Unpin};
+    use std::pin::Pin;
     use std::task::{LocalWaker, Poll};
     use std::time::{Duration, Instant};
 
@@ -24,8 +18,6 @@ mod tests {
         timer: Timer,
         guard: Option<Guard>,
     }
-
-    impl Unpin for Myfuture {}
 
     impl Future for Myfuture {
         type Output = bool;
@@ -52,11 +44,14 @@ mod tests {
     fn executor_current_thread() {
         assert_eq!(
             true,
-            block_on(async {
-                await!(Myfuture {
-                timer: Timer::new(),
-                guard: None,
-            })})
+            block_on(
+                async {
+                    await!(Myfuture {
+                        timer: Timer::new(),
+                        guard: None,
+                    })
+                }
+            )
         );
     }
 
