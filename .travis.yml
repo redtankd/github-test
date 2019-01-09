@@ -60,7 +60,7 @@ before_script:
   - psql -h localhost -U postgres -c "create database diesel with owner diesel"
   - cargo install diesel_cli
   - cd $TRAVIS_BUILD_DIR/database/diesel
-  - diesel migration run
+  - diesel setup
   - cd $TRAVIS_BUILD_DIR
 
 script:
