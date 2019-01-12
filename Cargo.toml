@@ -1,7 +1,9 @@
 [workspace]
 
 members = [
-	"syntax", 
+	"syntax/basic", 
+	"syntax/proc-macro-demo/hello",
+	"syntax/proc-macro-demo/hello-macro",
 
 	"future",
 

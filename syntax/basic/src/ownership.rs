@@ -11,13 +11,13 @@
 //                                  |--->  Shared Ownership
 //                                  |         |---->  Reference Counter: Rc and Arc
 
-// Box, Rc, Arc, Reference, &mut Reference are all pointers in the system level. 
+// Box, Rc, Arc, Reference, &mut Reference are all pointers in the system level.
 //
 // But Box have ownership, so the behavior is moving. Rc and Arc are shared ownership.
 //
-// Reference and &mut Reference borrow ownership, but do not take ownership, which 
-// is more polite if you don't need the ownership. References allow you to accept a 
-// wide variety of other pointers, and so are useful so that you don't have to write 
+// Reference and &mut Reference borrow ownership, but do not take ownership, which
+// is more polite if you don't need the ownership. References allow you to accept a
+// wide variety of other pointers, and so are useful so that you don't have to write
 // a number of variants per pointer ( see borrow_mut_reference() ).
 
 #[cfg(test)]
@@ -32,7 +32,7 @@ mod test {
         let x_pos = format!("{:p}", x); // get the address
 
         // x lost ownership
-        let y = x; 
+        let y = x;
         let y_pos = format!("{:p}", y);
         // x, y are pointer to the same address
         assert_eq!(x_pos, y_pos);
@@ -40,7 +40,7 @@ mod test {
         assert_eq!(*y, 5);
 
         // y lost ownership
-        let z = move_add_one(y); 
+        let z = move_add_one(y);
         let z_pos = format!("{:p}", z);
         // x, z are pointer to the same address
         assert_eq!(x_pos, z_pos);
@@ -72,7 +72,7 @@ mod test {
         assert!(x_pos != y_pos);
 
         // y is copied
-        let (z, a_pos) = copy_one(y); 
+        let (z, a_pos) = copy_one(y);
         let z_pos = format!("{:p}", &z);
         // y equals to z, but y is not z.
         assert_eq!(y, z);
@@ -102,9 +102,9 @@ mod test {
     }
 
     fn reference_add_one1(num: &i8) -> i8 {
-        // All of the arithmetic operators in Rust are implemented 
-        // for both primitive values and references to primitives 
-        // on either side of the operator. But mutable reference is 
+        // All of the arithmetic operators in Rust are implemented
+        // for both primitive values and references to primitives
+        // on either side of the operator. But mutable reference is
         // not. See std::ops::{Add, Mul ...}
         num + 1 // the same as '*num + 1'
     }
@@ -134,14 +134,14 @@ mod test {
         assert_eq!(*y, 6);
 
         *y += 1;
-        assert_eq!(*y, 7);  
+        assert_eq!(*y, 7);
         let y_pos_2 = format!("{:p}", &y);
         assert_eq!(y_pos_1, y_pos_2);
     }
 
     // ownership is returned when funciton quits
     fn mut_reference_add_one(num: &mut i8) {
-        *num += 1; // can't be 'num += 1' 
+        *num += 1; // can't be 'num += 1'
     }
 
     // -------------------------------------------------------
@@ -151,13 +151,13 @@ mod test {
 
     #[test]
     fn share_ownership() {
-        assert_eq!(3, * rc());
+        assert_eq!(3, *rc());
     }
 
     // ownership is returned when funciton quits
     fn rc() -> Rc<u32> {
         let rc = Rc::new(3);
-        rc.clone() 
+        rc.clone()
         // rc goes out of scope.
         // you can't return a reference of rc.
     }

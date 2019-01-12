@@ -1,10 +1,11 @@
-
 pub trait Format {
     fn format(self) -> String;
 }
 
-impl<I> Format for I 
-where I: ToString {
+impl<I> Format for I
+where
+    I: ToString,
+{
     fn format(self) -> String {
         self.to_string()
     }
@@ -13,11 +14,11 @@ where I: ToString {
 #[cfg(test)]
 mod test {
 
-	use mytraits::Format;
+    use mytraits::Format;
 
     #[test]
     fn mytrait() {
-    	assert_eq!("32123", 32123.format());
+        assert_eq!("32123", 32123.format());
     }
 
 }
