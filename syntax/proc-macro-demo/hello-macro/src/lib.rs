@@ -33,7 +33,7 @@ fn impl_hello_macro(ast: &syn::DeriveInput) -> TokenStream {
 // Attribute-like macros
 
 #[proc_macro_attribute]
-pub fn hello(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn hello(_attr: TokenStream, item: TokenStream) -> TokenStream {
     // syn::ItemFn requires feature "full"
     let input = syn::parse_macro_input!(item as syn::ItemFn);
     let name = &input.ident;
@@ -42,6 +42,30 @@ pub fn hello(attr: TokenStream, item: TokenStream) -> TokenStream {
     let result = quote! {
         fn #name() -> u32 { 42 }
     };
+    result.into()
+}
+
+#[proc_macro_attribute]
+pub fn struct_extension(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    // syn::ItemStruct requires feature "full"
+    let input = syn::parse_macro_input!(item as syn::ItemStruct);
+
+    let name = &input.ident;
+
+    let result =  match input.fields {
+        syn::Fields::Named(ref fields) => {
+            let fields = &fields.named;
+            quote! {
+                struct #name {
+                    #fields
+                    append: String,
+                }
+            }
+        }
+        syn::Fields::Unnamed(ref _fields) => panic!("not support now!"),
+        syn::Fields::Unit => panic!("not support now!"),
+    };
+
     result.into()
 }
 
