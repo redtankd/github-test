@@ -7,6 +7,5 @@ authors = ["redtankd <redtankd@qq.com>"]
 
 [dependencies]
 
-futures-preview = { version = "0.3.0-alpha.7", features = ["tokio-compat","compat"] }
-
-tokio = { version = "0.1.0", features = ["async-await-preview"] }
+futures-preview = "0.3.0-alpha.13"
+romio = "0.3.0-alpha.2"

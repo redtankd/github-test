@@ -12,3 +12,6 @@ rust-test.sublime-workspace
 # for idea
 .idea
 *.iml
+
+# for vscode
+.vscode
