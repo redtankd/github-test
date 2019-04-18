@@ -4,7 +4,7 @@
 mod tests {
     use std::future::Future;
     use std::pin::Pin;
-    use std::task::{Waker, Poll};
+    use std::task::{Context, Poll};
     use std::time::{Duration, Instant};
 
     use futures::compat::Future01CompatExt;
@@ -22,17 +22,17 @@ mod tests {
     impl Future for Myfuture {
         type Output = bool;
 
-        fn poll(self: Pin<&mut Self>, waker: &Waker) -> Poll<Self::Output> {
+        fn poll(self: Pin<&mut Self>, cx: &mut Context) -> Poll<Self::Output> {
             if self.guard.is_some() {
                 println!("\nMyfuture: I am ready");
                 return Poll::Ready(true);
             } else {
                 println!("\nMyfuture: I am not ready");
-                let waker = waker.clone();
+                let waker = cx.waker().clone();
                 Pin::get_mut(self).guard = Some(self.timer.schedule_with_delay(
                     chrono::Duration::seconds(1),
                     move || {
-                        waker.wake();
+                        waker.clone().wake();
                     },
                 ));
                 return Poll::Pending;
