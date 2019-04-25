@@ -1,4 +1,4 @@
-#![feature(async_await, await_macro, futures_api, arbitrary_self_types)]
+#![feature(async_await, await_macro)]
 
 #[cfg(test)]
 mod tests {
