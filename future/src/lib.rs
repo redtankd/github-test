@@ -1,4 +1,4 @@
-#![feature(async_await, await_macro)]
+#![feature(async_await)]
 
 #[cfg(test)]
 mod tests {
@@ -46,10 +46,10 @@ mod tests {
             true,
             block_on(
                 async {
-                    await!(Myfuture {
+                    Myfuture {
                         timer: Timer::new(),
                         guard: None,
-                    })
+                    }.await
                 }
             )
         );

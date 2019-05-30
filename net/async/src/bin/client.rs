@@ -1,4 +1,4 @@
-#![feature(await_macro, async_await)]
+#![feature(async_await)]
 
 use futures::prelude::*;
 
@@ -9,7 +9,7 @@ use std::net::SocketAddr;
 const MESSAGES: &[&str] = &["hello", "world", "one two three"];
 
 async fn run_client(addr: SocketAddr) -> std::io::Result<()> {
-    let mut stream = await!(TcpStream::connect(&addr))?;
+    let mut stream = TcpStream::connect(&addr).await?;
     println!("Connected");
 
     // Buffer to read into
@@ -19,10 +19,10 @@ async fn run_client(addr: SocketAddr) -> std::io::Result<()> {
         println!(" > write = {:?}", msg);
 
         // Write the message to the server
-        await!(stream.write_all(msg.as_bytes()))?;
+        stream.write_all(msg.as_bytes()).await?;
 
         // Read the message back from the server
-        await!(stream.read(&mut buf))?;
+        stream.read(&mut buf).await?;
 
         assert_eq!(&buf[..msg.len()], msg.as_bytes());
     }
@@ -39,7 +39,7 @@ fn main() {
     // Connect to the echo server
     futures::executor::block_on(
         async {
-            match await!(run_client(addr)) {
+            match run_client(addr).await {
                 Ok(_) => println!("done."),
                 Err(e) => eprintln!("echo client failed; error = {:?}", e),
             }

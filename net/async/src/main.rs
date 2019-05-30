@@ -1,4 +1,4 @@
-#![feature(await_macro, async_await)]
+#![feature(async_await)]
 
 use futures::executor::{self, ThreadPool};
 use futures::prelude::*;
@@ -12,11 +12,11 @@ async fn handle_client(mut stream: TcpStream) -> std::io::Result<()> {
     let mut buf = [0; 1024];
 
     loop {
-        match await!(stream.read(&mut buf))? {
+        match stream.read(&mut buf).await? {
             0 => break, // Socket closed
             n => {
                 // Send the data back
-                await!(stream.write_all(&buf[0..n]))?;
+                stream.write_all(&buf[0..n]).await?;
             }
         }
     }
@@ -41,7 +41,7 @@ fn main() {
 
     executor::block_on(
         async {
-            while let Some(stream) = await!(incoming.next()) {
+            while let Some(stream) = incoming.next().await {
                 let stream = stream.unwrap();
                 threadpool
                     .spawn(handle_client(stream).map(|x| x.unwrap()))
