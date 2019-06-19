@@ -2,6 +2,7 @@ extern crate proc_macro;
 
 use proc_macro::TokenStream;
 use quote::quote;
+use quote::ToTokens;
 use syn;
 
 //##########################################
@@ -52,7 +53,7 @@ pub fn struct_extension(_attr: TokenStream, item: TokenStream) -> TokenStream {
 
     let name = &input.ident;
 
-    let result =  match input.fields {
+    let result = match input.fields {
         syn::Fields::Named(ref fields) => {
             let fields = &fields.named;
             quote! {
@@ -69,12 +70,40 @@ pub fn struct_extension(_attr: TokenStream, item: TokenStream) -> TokenStream {
     result.into()
 }
 
+#[proc_macro_attribute]
+pub fn impl_trait(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    // syn::ItemImpl requires feature "full"
+    let mut input = syn::parse_macro_input!(item as syn::ItemImpl);
+
+    let result = quote! {
+        fn hello_macro() -> String {
+            "hello".to_owned()
+        }
+    }
+    .into();
+
+    let result = syn::parse_macro_input!(result as syn::ImplItemMethod);
+
+    input.items.push(syn::ImplItem::Method(result));
+
+    input.into_token_stream().into()
+}
+
 //##########################################
 // Function-like macros
 
-// #[proc_macro]
-// pub fn sql(input: TokenStream) -> TokenStream {
-// }
+#[proc_macro]
+pub fn func_macro(input: TokenStream) -> TokenStream {
+    let input = syn::parse_macro_input!(input as syn::LitStr);
+
+    let r = quote! {
+        fn hello_macro() -> String {
+            #input.to_owned()
+        }
+    };
+
+    r.into()
+}
 
 #[cfg(test)]
 mod tests {
