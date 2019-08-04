@@ -9,7 +9,7 @@ mod tests {
 
     use futures::compat::Future01CompatExt;
     use futures::executor::{block_on, ThreadPoolBuilder};
-    use futures::prelude::{FutureExt, TryFutureExt};
+    use futures::future::{FutureExt, TryFutureExt};
     use tokio::timer::Delay;
 
     use timer::{Guard, Timer};
