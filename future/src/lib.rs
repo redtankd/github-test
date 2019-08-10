@@ -7,9 +7,8 @@ mod tests {
     use std::task::{Context, Poll};
     use std::time::{Duration, Instant};
 
-    use futures::compat::Future01CompatExt;
     use futures::executor::{block_on, ThreadPoolBuilder};
-    use futures::future::{FutureExt, TryFutureExt};
+    use futures::future::FutureExt;
     use tokio::timer::Delay;
 
     use timer::{Guard, Timer};
@@ -44,14 +43,13 @@ mod tests {
     fn executor_current_thread() {
         assert_eq!(
             true,
-            block_on(
-                async {
-                    Myfuture {
-                        timer: Timer::new(),
-                        guard: None,
-                    }.await
+            block_on(async {
+                Myfuture {
+                    timer: Timer::new(),
+                    guard: None,
                 }
-            )
+                .await
+            })
         );
     }
 
@@ -67,21 +65,18 @@ mod tests {
         );
     }
 
-    #[test]
-    fn executor_eventloop() {
-        tokio::run(
-            Myfuture {
-                timer: Timer::new(),
-                guard: None,
-            }
-            .map(|x| {
-                assert_eq!(true, x);
-                ()
-            })
-            .unit_error()
-            // convert futures 0.3 into 0.1 with TryFuture
-            .compat(),
-        );
+    // #[test]
+    #[tokio::test]
+    async fn executor_eventloop() {
+        Myfuture {
+            timer: Timer::new(),
+            guard: None,
+        }
+        .map(|x| {
+            assert_eq!(true, x);
+            ()
+        })
+        .await;
     }
 
     #[test]
@@ -90,9 +85,8 @@ mod tests {
         let when = Instant::now() + Duration::from_millis(100);
         assert_eq!(
             1,
-            // Tokio 0.1's Future doesn't work in Futures 0.3's executor now.
-            block_on(Delay::new(when).compat().map(|x| {
-                assert_eq!((), x.unwrap());
+            block_on(Delay::new(when).map(|x| {
+                assert_eq!((), x);
                 1
             }))
         );

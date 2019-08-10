@@ -8,4 +8,4 @@ authors = ["redtankd <redtankd@qq.com>"]
 [dependencies]
 
 futures-preview = "0.3.0-alpha.13"
-romio = "0.3.0-alpha.2"
+tokio = "0.2.0-alpha.1"

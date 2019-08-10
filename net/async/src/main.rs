@@ -1,10 +1,7 @@
 #![feature(async_await)]
 
-use futures::executor::{self, ThreadPool};
-use futures::prelude::*;
-use futures::task::SpawnExt;
-
-use romio::{TcpListener, TcpStream};
+use tokio::net::{TcpListener, TcpStream};
+use tokio::prelude::*;
 
 use std::net::SocketAddr;
 
@@ -24,29 +21,21 @@ async fn handle_client(mut stream: TcpStream) -> std::io::Result<()> {
     Ok(())
 }
 
-fn main() {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     use std::env;
 
     let addr = env::args().nth(1).unwrap_or("127.0.0.1:8000".to_string());
-    let addr = addr.parse::<SocketAddr>().unwrap();
+    let addr = addr.parse::<SocketAddr>()?;
 
     // Bind the TCP listener
-    let mut listener = TcpListener::bind(&addr).unwrap();
+    let mut listener = TcpListener::bind(&addr)?;
     println!("Listening on: {}", addr);
 
-    let mut incoming = listener.incoming();
+    #[allow(irrefutable_let_patterns)]
+    while let (stream, _) = listener.accept().await? {
+        tokio::spawn(handle_client(stream).map(|_| ()));
+    }
 
-    // the thread pool to handle client connection
-    let mut threadpool = ThreadPool::new().unwrap();
-
-    executor::block_on(
-        async {
-            while let Some(stream) = incoming.next().await {
-                let stream = stream.unwrap();
-                threadpool
-                    .spawn(handle_client(stream).map(|x| x.unwrap()))
-                    .unwrap();
-            }
-        },
-    );
+    Ok(())
 }

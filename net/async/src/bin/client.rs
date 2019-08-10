@@ -1,8 +1,7 @@
 #![feature(async_await)]
 
-use futures::prelude::*;
-
-use romio::TcpStream;
+use tokio::net::TcpStream;
+use tokio::prelude::*;
 
 use std::net::SocketAddr;
 
@@ -30,19 +29,18 @@ async fn run_client(addr: SocketAddr) -> std::io::Result<()> {
     Ok(())
 }
 
-fn main() {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     use std::env;
 
     let addr = env::args().nth(1).unwrap_or("127.0.0.1:8000".to_string());
-    let addr = addr.parse::<SocketAddr>().unwrap();
+    let addr = addr.parse::<SocketAddr>()?;
 
     // Connect to the echo server
-    futures::executor::block_on(
-        async {
-            match run_client(addr).await {
-                Ok(_) => println!("done."),
-                Err(e) => eprintln!("echo client failed; error = {:?}", e),
-            }
-        },
-    );
+    match run_client(addr).await {
+        Ok(_) => println!("done."),
+        Err(e) => eprintln!("echo client failed; error = {:?}", e),
+    }
+
+    Ok(())
 }
