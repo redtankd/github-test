@@ -1,5 +1,3 @@
-#![feature(async_await)]
-
 use tokio::net::{TcpListener, TcpStream};
 use tokio::prelude::*;
 
@@ -29,7 +27,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let addr = addr.parse::<SocketAddr>()?;
 
     // Bind the TCP listener
-    let mut listener = TcpListener::bind(&addr)?;
+    let mut listener = TcpListener::bind(&addr).await?;
     println!("Listening on: {}", addr);
 
     #[allow(irrefutable_let_patterns)]

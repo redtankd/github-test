@@ -1,5 +1,3 @@
-#![feature(async_await)]
-
 use tokio::net::TcpStream;
 use tokio::prelude::*;
 

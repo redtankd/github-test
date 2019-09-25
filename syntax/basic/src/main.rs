@@ -11,7 +11,7 @@ mod mytraits;
 mod ownership;
 
 fn main() {
-    let mut hashmap = HashMap::<&str, Rc<Any>>::new();
+    let mut hashmap = HashMap::<&str, Rc<dyn Any>>::new();
 
     // hashmap is &mut borrowed in insert(), but the scope is ended in the statement
     hashmap.insert("resource", Rc::new("abc"));
@@ -32,7 +32,7 @@ fn main() {
     thread::sleep(Duration::from_millis(100));
 }
 
-fn new_instance(hashmap: &mut HashMap<&str, Rc<Any>>) {
+fn new_instance(hashmap: &mut HashMap<&str, Rc<dyn Any>>) {
     let resource: &str;
     {
         // hashmap is &mut borrowed in outter scope and can't be read-only borrowed.

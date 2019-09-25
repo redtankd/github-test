@@ -9,3 +9,5 @@ authors = ["redtankd <redtankd@qq.com>"]
 
 futures-preview = "0.3.0-alpha.13"
 tokio = "0.2.0-alpha.1"
+bytes = "0.4"
+env_logger = "0.6"
