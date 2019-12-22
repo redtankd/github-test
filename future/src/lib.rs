@@ -1,3 +1,4 @@
+// Future's channel will be replaced.
 
 #[cfg(test)]
 mod tests {
@@ -5,12 +6,13 @@ mod tests {
     use std::pin::Pin;
     use std::task::{Context, Poll};
     use std::thread;
-    use std::time::{Duration, Instant};
+    use std::time::Duration;
 
     use futures::executor::{block_on, ThreadPoolBuilder};
     use futures::future::{lazy, FutureExt};
     use futures::task::SpawnExt;
-    use tokio::timer::delay;
+
+    use tokio::time;
 
     use timer::{Guard, Timer};
 
@@ -54,9 +56,10 @@ mod tests {
         );
     }
 
+    // need future's "thread-pool" feature
     #[test]
     fn executor_threadpool() -> Result<(), Box<dyn std::error::Error>> {
-        let mut pool = ThreadPoolBuilder::new().pool_size(2).create()?;
+        let pool = ThreadPoolBuilder::new().pool_size(2).create()?;
 
         pool.spawn(lazy(|_| {
             eprintln!("--- a is runing at thread {:?}!", thread::current().id());
@@ -82,19 +85,14 @@ mod tests {
             eprintln!("d am done!");
         })?;
 
-        assert_eq!(
-            true,
-            pool.run(Myfuture {
-                timer: Timer::new(),
-                guard: None,
-            })
-        );
+        // wait all task finish
+        thread::sleep(Duration::from_millis(1510));
 
         Ok(())
     }
 
     #[tokio::test]
-    async fn executor_eventloop() {
+    async fn executor_tokio_runtime() {
         Myfuture {
             timer: Timer::new(),
             guard: None,
@@ -109,10 +107,9 @@ mod tests {
     #[test]
     #[should_panic]
     fn job_on_time() {
-        let when = Instant::now() + Duration::from_millis(100);
         assert_eq!(
             1,
-            block_on(delay(when).map(|x| {
+            block_on(time::delay_for(Duration::from_millis(100)).map(|x| {
                 assert_eq!((), x);
                 1
             }))
