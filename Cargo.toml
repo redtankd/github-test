@@ -5,10 +5,12 @@ members = [
 	"syntax/proc-macro-demo/hello",
 	"syntax/proc-macro-demo/hello-macro",
 
-	"future",
-
+	"async/future",
+	"async/tokio",
+	"async/mio",
+	
 	"net/sync",
-	"net/async",
+	"net/proto",
 	
 	"ffi/cpp-rust-ffi/common-rust",
 	"ffi/java-rust-ffi/rust",
@@ -19,5 +21,5 @@ members = [
 	"code-coverage",
 
 	"database/diesel",
-	"database/postgres"
+	"database/postgres",
 ]

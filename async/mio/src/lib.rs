@@ -1,9 +1,12 @@
-extern crate mio;
 
-use std::io::prelude::*;
+#[cfg(test)] 
+use mio::{Events, Ready, Poll, PollOpt, Token};
 
-use mio::*;
+#[cfg(test)] 
 use mio::tcp::{TcpListener, TcpStream};
+
+#[cfg(test)] 
+use std::io::{Write, Read};
 
 #[test]
 fn test() {
