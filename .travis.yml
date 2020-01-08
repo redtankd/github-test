@@ -24,7 +24,7 @@ addons:
       - binutils-dev
       #- libiberty-dev # <- no such thing in Ubuntu 12.04
       - g++
-      - protobuf-compiler
+      - protobuf-compiler-3
 
 before_install:
     - curl -L https://github.com/protocolbuffers/protobuf/releases/download/v3.7.1/protoc-3.7.1-linux-x86_64.zip > protoc-release.zip
