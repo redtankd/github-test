@@ -27,8 +27,9 @@ addons:
 
 before_install:
     - curl -L https://github.com/protocolbuffers/protobuf/releases/download/v3.7.1/protoc-3.7.1-linux-x86_64.zip > protoc-release.zip
-    - unzip -p protoc-release.zip bin/protoc > $HOME/.local/bin/protoc
-    - chmod a+x $HOME/.local/bin/protoc
+    - mkdir -p $LOCAL/bin
+    - unzip -p protoc-release.zip bin/protoc > $LOCAL/bin/protoc
+    - chmod a+x $LOCAL/bin/protoc
     - rm protoc-release.zip
 
 install:
