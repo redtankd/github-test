@@ -4,7 +4,7 @@ language: rust
 
 rust:
   - stable
-  - beta
+  # - beta
   - nightly
 
 env:
@@ -25,26 +25,10 @@ addons:
       #- libiberty-dev # <- no such thing in Ubuntu 12.04
       - g++
 
-before_install:
-    # - curl -L https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOBUF_VERSION/protoc-$PROTOBUF_VERSION-linux-x86_64.zip > protoc-release.zip
-    # - mkdir -p $LOCAL
-    # - unzip protoc-release.zip -d $LOCAL
-    # - chmod a+x $LOCAL/bin/protoc
-    # - rm protoc-release.zip
-    # - ls $LOCAL/bin
-    # - ls $LOCAL/include
-    # - ls $LOCAL
-    # - protoc --version
-
 install:
     - export PATH=$LOCAL/bin:$HOME/.cargo/bin:$PATH
-    # - export INCLUDE=$INCLUDE:$LOCAL/include
     - mkdir -p $LOCAL/bin
     - mkdir -p ~/.cargo/bin
-
-    # - ls $LOCAL/bin
-    # - which protoc
-    # - protoc --version
 
     # 1. Install kcov
     - export SRC_DIR_KCOV=~/kcov-src
