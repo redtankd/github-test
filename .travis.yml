@@ -42,9 +42,9 @@ install:
     - mkdir -p $LOCAL/bin
     - mkdir -p ~/.cargo/bin
 
-    - ls $LOCAL/bin
-    - which protoc
-    - protoc --version
+    # - ls $LOCAL/bin
+    # - which protoc
+    # - protoc --version
 
     # 1. Install kcov
     - export SRC_DIR_KCOV=~/kcov-src
