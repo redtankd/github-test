@@ -34,7 +34,7 @@ before_install:
     - ls $LOCAL/bin
     - ls $LOCAL/include
     - ls $LOCAL
-    - protoc --version
+    # - protoc --version
 
 install:
     - export PATH=$LOCAL/bin:$HOME/.cargo/bin:$PATH
