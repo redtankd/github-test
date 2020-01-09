@@ -24,17 +24,21 @@ addons:
       - binutils-dev
       #- libiberty-dev # <- no such thing in Ubuntu 12.04
       - g++
-      - protobuf-compiler-3.7.1
 
 before_install:
-    - curl -L https://github.com/protocolbuffers/protobuf/releases/download/v3.7.1/protoc-3.7.1-linux-x86_64.zip > protoc-release.zip
-    - mkdir -p $LOCAL/bin
-    - unzip -p protoc-release.zip bin/protoc > $LOCAL/bin/protoc
+    - curl -L https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOBUF_VERSION/protoc-3.7.1-linux-x86_64.zip > protoc-release.zip
+    - mkdir -p $LOCAL
+    - unzip protoc-release.zip -d $LOCAL
     - chmod a+x $LOCAL/bin/protoc
     - rm protoc-release.zip
+    - ls $LOCAL/bin
+    - ls $LOCAL/include
+    - ls $LOCAL
+    - protoc --version
 
 install:
     - export PATH=$LOCAL/bin:$HOME/.cargo/bin:$PATH
+    - export INCLUDE=$INCLUDE:$LOCAL/include
     - mkdir -p $LOCAL/bin
     - mkdir -p ~/.cargo/bin
 
