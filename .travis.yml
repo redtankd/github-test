@@ -26,19 +26,19 @@ addons:
       - g++
 
 before_install:
-    - curl -L https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOBUF_VERSION/protoc-$PROTOBUF_VERSION-linux-x86_64.zip > protoc-release.zip
-    - mkdir -p $LOCAL
-    - unzip protoc-release.zip -d $LOCAL
-    - chmod a+x $LOCAL/bin/protoc
-    - rm protoc-release.zip
-    - ls $LOCAL/bin
-    - ls $LOCAL/include
-    - ls $LOCAL
+    # - curl -L https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOBUF_VERSION/protoc-$PROTOBUF_VERSION-linux-x86_64.zip > protoc-release.zip
+    # - mkdir -p $LOCAL
+    # - unzip protoc-release.zip -d $LOCAL
+    # - chmod a+x $LOCAL/bin/protoc
+    # - rm protoc-release.zip
+    # - ls $LOCAL/bin
+    # - ls $LOCAL/include
+    # - ls $LOCAL
     # - protoc --version
 
 install:
     - export PATH=$LOCAL/bin:$HOME/.cargo/bin:$PATH
-    - export INCLUDE=$INCLUDE:$LOCAL/include
+    # - export INCLUDE=$INCLUDE:$LOCAL/include
     - mkdir -p $LOCAL/bin
     - mkdir -p ~/.cargo/bin
 
@@ -69,6 +69,17 @@ install:
 
     # 2. Install cargo-kcov.
     # - cargo install cargo-kcov
+
+    # 3. Install Protobuf
+    - git clone https://github.com/protocolbuffers/protobuf.git
+    - cd protobuf
+    - git submodule update --init --recursive
+    - ./autogen.sh
+    - ./configure
+    - make
+    - make check
+    - sudo make install
+    - sudo ldconfig # refresh shared library cache.
 
 before_script:
   - export RUSTFLAGS="-C link-dead-code"
