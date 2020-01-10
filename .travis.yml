@@ -75,10 +75,12 @@ before_script:
   - cd $TRAVIS_BUILD_DIR
 
 script:
-  - cargo build $CARGO_OPTIONS
-  - cargo test --all $CARGO_OPTIONS
+  # - cargo build $CARGO_OPTIONS
+  # - cargo test --all $CARGO_OPTIONS
 
 after_success: |
+  pwd;
+  ls -l;
   grcov . -s . -t coveralls+  --ignore "$HOME/.cargo/*" --ignore-not-existing \
     --commit-sha $TRAVIS_COMMIT \
     --service-name travis-ci \
