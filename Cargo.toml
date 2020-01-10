@@ -9,8 +9,9 @@ members = [
 	"async/tokio",
 	"async/mio",
 	
-	"net/sync",
-	"net/proto",
+	"net",
+	
+	"encoding/proto",
 	
 	"ffi/cpp-rust-ffi/common-rust",
 	"ffi/java-rust-ffi/rust",
