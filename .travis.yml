@@ -55,6 +55,7 @@ after_success:
 
       ./grcov . -s . -t coveralls+  --ignore "$HOME/.cargo/*" --ignore-not-existing --parallel \
         --service-name travis-ci \
+        --service-number $TRAVIS_BUILD_NUMBER \
         --service-job-number $TRAVIS_JOB_ID \
         --service-pull-request $TRAVIS_PULL_REQUEST \
         --commit-sha $TRAVIS_COMMIT \
