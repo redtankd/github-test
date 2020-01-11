@@ -18,53 +18,16 @@ jobs:
         - CARGO_INCREMENTAL=0
         - RUSTFLAGS="-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads"
 
-    
-# rust:
-#   - stable
-#   # - beta
-#   - nightly  
-    # - CARGO_INCREMENTAL=0
-    # - RUSTFLAGS="-Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off"
-      # "-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads"
-  # matrix:
-
 services:
   - postgresql
 
 addons:
   apt:
     packages:
-      - libcurl4-openssl-dev
-      - libelf-dev
-      - libdw-dev
-      - binutils-dev
-      #- libiberty-dev # <- no such thing in Ubuntu 12.04
-      - g++
 
 install:
     - mkdir -p $HOME/.local/bin
     - mkdir -p $HOME/.cargo/bin
-
-    # 1. Install kcov
-    # - export SRC_DIR_KCOV=~/kcov-src
-    # - export URL_GIT_KCOV=https://github.com/SimonKagstrom/kcov.git
-    # - |
-    #     git clone $URL_GIT_KCOV $SRC_DIR_KCOV
-    #     cd $SRC_DIR_KCOV
-
-    #     # default to latest tagged version
-    #     DEFAULT_KCOV_GIT_REF=$(git tag --list | grep "^v[0-9]\+$" | sort -V | tail --lines 1)
-    #     KCOV_GIT_REF=${KCOV_GIT_REF:-$DEFAULT_KCOV_GIT_REF}
-    #     git reset --hard $KCOV_GIT_REF;
-
-    #     cd $SRC_DIR_KCOV && 
-    #       mkdir build && 
-    #       cd build && 
-    #       cmake -DCMAKE_INSTALL_PREFIX=$LOCAL .. && 
-    #       make && 
-    #       make install &&
-    #       kcov --version
-    # - cd $TRAVIS_BUILD_DIR
 
     # Installing Protobuf
     - curl -L "https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOBUF_VERSION/protoc-$PROTOBUF_VERSION-linux-x86_64.zip" -o protobuf-release.zip
@@ -83,6 +46,12 @@ before_script:
 script:
   - cargo build --verbose
   - cargo test --all --verbose
+
+  - echo $TRAVIS_COMMIT
+  - echo $TRAVIS_JOB_ID
+  - echo $TRAVIS_BUILD_ID
+  - echo $TRAVIS_BUILD_NUMBER
+  - echo $TRAVIS_JOB_NUMBER
 
 after_success:
   - |
