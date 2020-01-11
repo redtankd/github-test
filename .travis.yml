@@ -34,7 +34,7 @@ install:
     - sudo unzip protobuf-release.zip -d /usr/local
 
     # Installing diesel console command
-    - cargo install diesel_cli
+    - cargo install --force diesel_cli
 
 before_script:
   - psql -h localhost -U postgres -c "create user diesel createdb password 'diesel'"
@@ -47,12 +47,6 @@ script:
   - cargo build --verbose
   - cargo test --all --verbose
 
-  - echo $TRAVIS_COMMIT
-  - echo $TRAVIS_JOB_ID
-  - echo $TRAVIS_BUILD_ID
-  - echo $TRAVIS_BUILD_NUMBER
-  - echo $TRAVIS_JOB_NUMBER
-
 after_success:
   - |
     if [ "$TRAVIS_RUST_VERSION" = "nightly" ]; then
@@ -61,7 +55,8 @@ after_success:
       ./grcov . -s . -t coveralls+  --ignore "$HOME/.cargo/*" --ignore-not-existing \
         --commit-sha $TRAVIS_COMMIT \
         --service-name travis-ci \
-        --service-job-number $TRAVIS_JOB_ID \
+        --service-number $TRAVIS_BUILD_NUMBER \ 
+        --service-job-number $TRAVIS_JOB_NUMBER \
         --token $COVERALLS_REPO_TOKEN > coveralls.json;
 
       curl "https://coveralls.io/api/v1/jobs" -F json_file=@coveralls.json;

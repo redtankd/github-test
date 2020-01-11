@@ -7,7 +7,34 @@ I'm learning Rust!
 
 ## Code Coverage
 
-### Installing Kcov
+### Solution 1: grcov
+
+Only work in nightly now.
+
+#### Installing grcov
+
+```
+cargo install grcov
+brew install lcov
+```
+
+#### Testing
+
+```
+export CARGO_INCREMENTAL=0
+
+# Nightly
+export RUSTFLAGS="-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads"
+
+cargo +nightly test --all
+
+grcov . -s . -t lcov --ignore "$HOME/.cargo/*" --ignore-not-existing  > lcov.info
+genhtml -o target/cov --show-details --highlight --ignore-errors source --legend lcov.info
+```
+
+### Solution 2: kcov
+
+#### Installing kcov
 
 1. Dependencies
 
@@ -39,8 +66,10 @@ I'm learning Rust!
     xargs rm < install_manifest.txt
     ```
 
-### Installing cargo-kcov
+#### Installing cargo-kcov
 
 ```
 cargo install cargo-kcov
 ```
+
+Doesn't work in macOS
