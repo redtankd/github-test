@@ -53,7 +53,7 @@ after_success:
 
       curl -L https://github.com/mozilla/grcov/releases/latest/download/grcov-linux-x86_64.tar.bz2 | tar jxf -
 
-      ./grcov . -s . -t coveralls+  --ignore "$HOME/.cargo/*" --ignore-not-existing --parallel \
+      ./grcov . -s . -t coveralls+  --ignore "$HOME/.cargo/*" --ignore-not-existing \
         --service-name travis-ci \
         --service-number $TRAVIS_BUILD_NUMBER \
         --service-job-number $TRAVIS_JOB_ID \
