@@ -14,7 +14,7 @@ jobs:
   include:
     - rust: stable
     - rust: nightly
-      env: 
+      env:
         - CARGO_INCREMENTAL=0
         - RUSTFLAGS="-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads"
 
@@ -26,15 +26,15 @@ addons:
     packages:
 
 install:
-    - mkdir -p $HOME/.local/bin
-    - mkdir -p $HOME/.cargo/bin
+  - mkdir -p $HOME/.local/bin
+  - mkdir -p $HOME/.cargo/bin
 
-    # Installing Protobuf
-    - curl -L "https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOBUF_VERSION/protoc-$PROTOBUF_VERSION-linux-x86_64.zip" -o protobuf-release.zip
-    - sudo unzip protobuf-release.zip -d /usr/local
+  # Installing Protobuf
+  - curl -L "https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOBUF_VERSION/protoc-$PROTOBUF_VERSION-linux-x86_64.zip" -o protobuf-release.zip
+  - sudo unzip protobuf-release.zip -d /usr/local
 
-    # Installing diesel console command
-    - cargo install --force diesel_cli
+  # Installing diesel console command
+  - cargo install --force diesel_cli
 
 before_script:
   - psql -h localhost -U postgres -c "create user diesel createdb password 'diesel'"
@@ -61,8 +61,4 @@ after_success:
         --token $COVERALLS_REPO_TOKEN > coveralls.json;
 
       curl "https://coveralls.io/api/v1/jobs" -F json_file=@coveralls.json;
-
-      echo
-      cat coveralls.json
-      echo
     fi
