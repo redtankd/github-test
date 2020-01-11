@@ -61,4 +61,8 @@ after_success:
         --token $COVERALLS_REPO_TOKEN > coveralls.json;
 
       curl "https://coveralls.io/api/v1/jobs" -F json_file=@coveralls.json;
+
+      echo
+      cat coveralls.json
+      echo
     fi
