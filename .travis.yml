@@ -50,13 +50,16 @@ script:
 after_success:
   - |
     if [ "$TRAVIS_RUST_VERSION" = "nightly" ]; then
+
+      echo $COVERALLS_REPO_TOKEN
+
       curl -L https://github.com/mozilla/grcov/releases/latest/download/grcov-linux-x86_64.tar.bz2 | tar jxf -;
 
       ./grcov . -s . -t coveralls+  --ignore "$HOME/.cargo/*" --ignore-not-existing \
         --commit-sha $TRAVIS_COMMIT \
         --service-name travis-ci \
         --service-number $TRAVIS_BUILD_NUMBER \ 
-        --token $COVERALLS_REPO_TOKEN > coveralls.json;
+        --token "$COVERALLS_REPO_TOKEN" > coveralls.json;
 
       cat coveralls.json;
 
