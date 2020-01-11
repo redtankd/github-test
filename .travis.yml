@@ -57,9 +57,8 @@ after_success:
         --commit-sha $TRAVIS_COMMIT \
         --service-name travis-ci \
         --service-number $TRAVIS_BUILD_NUMBER \
-        --token "$COVERALLS_REPO_TOKEN" > coveralls.json;
-
-      cat coveralls.json;
+        --service_job_number $TRAVIS_JOB_NUMBER \
+        --token $COVERALLS_REPO_TOKEN > coveralls.json;
 
       curl "https://coveralls.io/api/v1/jobs" -F json_file=@coveralls.json;
     fi
