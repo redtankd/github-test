@@ -9,6 +9,7 @@ use std::time::Duration;
 mod deref_coercions;
 mod mytraits;
 mod ownership;
+mod weak_reference;
 
 fn main() {
     let mut hashmap = HashMap::<&str, Rc<dyn Any>>::new();

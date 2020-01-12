@@ -14,7 +14,7 @@ where
 #[cfg(test)]
 mod test {
 
-    use mytraits::Format;
+    use super::Format;
 
     #[test]
     fn mytrait() {
