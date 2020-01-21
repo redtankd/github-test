@@ -1,103 +1,85 @@
-extern crate postgres;
-#[macro_use] extern crate serde_json;
-extern crate dotenv;
+use postgres::row::Row;
+use postgres::types::FromSql;
+use serde_json::{Map, Value};
 
-use postgres::{Connection, TlsMode};
-use postgres::rows::{Rows};
-use postgres::types::{FromSql};
+fn main() {}
 
-use serde_json::{Value, Map};
-
-fn main() {
-}
-
-fn rows_to_json(rows: &Rows) -> Value {
+fn _rows_to_json(rows: &Vec<Row>) -> Value {
 	let mut rows_json = Vec::with_capacity(rows.len());
-	for _ in 0..rows.len() {
-		rows_json.push(Map::new());
-	}
 
-	for i in 0..rows.columns().len() {
-		column_to_json(rows, i, &mut rows_json);
+	for row in rows {
+		let mut row_json = Map::new();
+		for col in row.columns() {
+			let key = col.name();
+			let ty = col.type_();
+
+			let value = if i32::accepts(ty) {
+				Value::from(row.get::<&str, i32>(key))
+			} else if String::accepts(ty) {
+				Value::from(row.get::<&str, String>(key))
+			} else if Vec::<u8>::accepts(ty) {
+				Value::from(row.get::<&str, Vec<u8>>(key))
+			} else {
+				Value::Null
+			};
+
+			row_json.insert(key.to_string(), Value::from(value));
+		}
+		rows_json.push(row_json);
 	}
 
 	return Value::from(rows_json);
 }
 
-fn column_to_json(rows: &Rows, column_pos: usize, rows_json: &mut Vec<Map<String, Value>>) {
-	if let Some(column) = rows.columns().get(column_pos) {
-		let t = column.type_();
-		if <i32 as FromSql>::accepts(t) {
-			_column_to_json::<i32>(rows, column.name(), column_pos, rows_json);
-		} else if <String as FromSql>::accepts(t) {
-			_column_to_json::<String>(rows, column.name(), column_pos, rows_json);
-		} else if <Vec<u8> as FromSql>::accepts(t) {
-			_column_to_json::<Vec<u8>>(rows, column.name(), column_pos, rows_json);
-		} 
-	}
-}
-
-fn _column_to_json<T: FromSql>(rows: &Rows, column_name: &str, 
-	column_pos: usize, rows_json: &mut Vec<Map<String, Value>>) 
-	where serde_json::Value: std::convert::From<T> {
-
-	for (j, row) in rows.iter().enumerate() {
-		if let Some(row_json) = rows_json.get_mut(j) {
-			row_json.insert(
-				column_name.to_string(), 
-				Value::from(row.get::<usize, T>(column_pos))
-			);
-		}
-	}
-}
-
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use std::env;
-    use dotenv::dotenv;
+	use super::*;
+	use dotenv::dotenv;
+	use postgres::{Client, NoTls};
+	use serde_json::json;
+	use std::env;
 
-    #[test]
-    fn json() {
-    	dotenv().ok();
-    	let database_url = env::var("POSTGRES_URL")
-        	.expect("POSTGRES_URL must be set");
-        let conn = Connection::connect(database_url, TlsMode::None).unwrap();
-        conn.execute("drop TABLE person", &[]).unwrap_or(0);
-	    conn.execute("CREATE TABLE person (
+	#[test]
+	fn json() -> Result<(), postgres::error::Error> {
+		dotenv().ok();
+		let database_url = env::var("POSTGRES_URL").expect("POSTGRES_URL must be set");
+		let mut conn = Client::connect(&database_url, NoTls)?;
+		conn.execute("DROP TABLE IF EXISTS person", &[])?;
+		conn.execute(
+			"CREATE TABLE person (
 	                    id              SERIAL PRIMARY KEY,
 	                    name            VARCHAR NOT NULL,
 	                    data            BYTEA
-	                  )", &[]).unwrap();
-	    
-	    let data = vec![
-	    	vec![0u8,1u8,2u8],
-	    	vec![]
-	    ];
-	    let p = json!([
-	    	{
-	    		"id": 1,
-	    		"name": "a",
-	    		"data": data[0]
-	    	},
-	    	{
-	    		"id": 2,
-	    		"name": "b",
-	    		"data": data[1]	
-	    	}
-	    ]);
+	                  )",
+			&[],
+		)?;
 
-	    let stmt = conn.prepare("INSERT INTO person (name, data) VALUES ($1, $2)").unwrap();
-	    stmt.execute(&[&p[0]["name"].as_str().unwrap(), &data[0]]).unwrap();
-	    stmt.execute(&[&p[1]["name"].as_str().unwrap(), &data[1]]).unwrap();
+		let data = vec![vec![0u8, 1u8, 2u8], vec![]];
+		let p = json!([
+			{
+				"id": 1,
+				"name": "a",
+				"data": data[0]
+			},
+			{
+				"id": 2,
+				"name": "b",
+				"data": data[1]
+			}
+		]);
 
-	    let j = rows_to_json(&conn.query("SELECT id, name, data FROM person", &[]).unwrap());
-	    
-	    println!("p = {:?}", p.to_string());
-	    println!("j = {:?}", j.to_string());
-	    assert_eq!(p, j);
+		let stmt = conn.prepare("INSERT INTO person (name, data) VALUES ($1, $2)")?;
+		conn.execute(&stmt, &[&p[0]["name"].as_str().unwrap(), &data[0]])?;
+		conn.execute(&stmt, &[&p[1]["name"].as_str().unwrap(), &data[1]])?;
 
-	    conn.execute("drop TABLE person", &[]).unwrap();
-    }
+		let j = _rows_to_json(&conn.query("SELECT id, name, data FROM person", &[])?);
+
+		println!("p = {:?}", p.to_string());
+		println!("j = {:?}", j.to_string());
+		assert_eq!(p, j);
+
+		conn.execute("drop TABLE person", &[])?;
+
+		Ok(())
+	}
 }
-//[cfg(test)]
