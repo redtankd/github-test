@@ -5,21 +5,13 @@ extern crate test;
 
 use std::collections::HashMap;
 use std::error::Error;
-
-use failure::Fail;
+use std::fmt::{self, Display};
 
 type LimitAmount = u64;
 
-#[derive(Debug, PartialEq, Fail)]
-#[fail(display = "An error occurred.")]
+#[derive(Debug)]
 pub struct LimitError {
     kind: LimitErrorKind,
-}
-
-#[derive(Debug, PartialEq)]
-pub enum LimitErrorKind {
-    LimitUnavailable,
-    WrongEntity,
 }
 
 impl LimitError {
@@ -28,6 +20,21 @@ impl LimitError {
     }
 }
 
+impl Error for LimitError {}
+
+impl Display for LimitError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "LimitError")
+    }
+}
+
+#[derive(Debug, PartialEq)]
+pub enum LimitErrorKind {
+    LimitUnavailable,
+    WrongEntity,
+}
+
+#[derive(Debug)]
 pub struct TwoWayLimit {
     left: LimitAmount,
     right: LimitAmount,
@@ -43,28 +50,21 @@ impl TwoWayLimit {
         }
     }
 
-    pub fn try_deduct(&mut self, amount: LimitAmount) -> Result<(), Box<dyn Error>> {
+    pub fn try_deduct(&mut self, amount: LimitAmount) -> Result<(), LimitError> {
         if self.double >= amount {
             self.left -= amount;
             self.right -= amount;
             self.double -= amount;
             return Ok(());
         } else {
-            return Err(Box::new(
-                LimitError::new(LimitErrorKind::LimitUnavailable).compat(),
-            ));
+            return Err(LimitError::new(LimitErrorKind::LimitUnavailable));
         }
     }
 
-    pub fn try_deduct_available(
-        &mut self,
-        amount: LimitAmount,
-    ) -> Result<LimitAmount, Box<dyn std::error::Error>> {
+    pub fn try_deduct_available(&mut self, amount: LimitAmount) -> Result<LimitAmount, LimitError> {
         let available = amount.min(self.double);
         if available == 0 {
-            return Err(Box::new(
-                LimitError::new(LimitErrorKind::LimitUnavailable).compat(),
-            ));
+            return Err(LimitError::new(LimitErrorKind::LimitUnavailable));
         }
         self.left -= available;
         self.right -= available;
@@ -98,11 +98,9 @@ impl LimitManager {
         left_amount: LimitAmount,
         right_entity: usize,
         right_amount: LimitAmount,
-    ) -> Result<(), Box<dyn Error>> {
+    ) -> Result<(), LimitError> {
         if left_entity >= right_entity {
-            return Err(Box::new(
-                LimitError::new(LimitErrorKind::WrongEntity).compat(),
-            ));
+            return Err(LimitError::new(LimitErrorKind::WrongEntity));
         }
         let limit = TwoWayLimit::new(left_amount, right_amount);
         self.limits
@@ -115,16 +113,14 @@ impl LimitManager {
         left_entity: usize,
         right_entity: usize,
         amount: LimitAmount,
-    ) -> Result<(), Box<dyn Error>> {
+    ) -> Result<(), LimitError> {
         if let Some(limit) = self
             .limits
             .get_mut(&(left_entity * self.shift + right_entity))
         {
             return limit.try_deduct(amount);
         } else {
-            return Err(Box::new(
-                LimitError::new(LimitErrorKind::WrongEntity).compat(),
-            ));
+            return Err(LimitError::new(LimitErrorKind::WrongEntity));
         }
     }
 }
@@ -209,8 +205,8 @@ mod bench {
     #[bench]
     fn bench_limit_manager(b: &mut Bencher) {
         let entity_count = 10000;
-        let shift = 100_000;
-        let test_count = 100_000;
+        let shift = 10_0000;
+        let test_count = 10_0000;
 
         let mut limit_manager = init_limit_manager(entity_count, shift);
         let deduct_queue = init_deduct_queue(test_count, entity_count);
@@ -218,7 +214,7 @@ mod bench {
         b.iter(|| {
             deduct_queue.iter().for_each(|(left, right, amount)| {
                 let _ = limit_manager.deduct(*left, *right, *amount);
-            })
+            });
         });
     }
 
@@ -253,7 +249,7 @@ mod bench {
             } else {
                 j = rng.gen_range(i + 1, entity_count);
             }
-            let amount = rng.gen_range(1, 201) * 1000;
+            let amount = rng.gen_range(1, 51) * 1000;
             queue.push((i, j, amount));
         }
 
