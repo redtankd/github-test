@@ -7,7 +7,7 @@ use std::collections::HashMap;
 use std::error::Error;
 use std::fmt::{self, Display};
 
-type LimitAmount = u64;
+pub type LimitAmount = u64;
 
 #[derive(Debug)]
 pub struct LimitError {
@@ -89,6 +89,18 @@ impl LimitManager {
         LimitManager {
             limits: HashMap::with_capacity(capacity),
             shift: shift,
+        }
+    }
+
+    pub fn get_limit(
+        &self,
+        left_entity: usize,
+        right_entity: usize,
+    ) -> Result<LimitAmount, LimitError> {
+        if let Some(limit) = self.limits.get(&(left_entity * self.shift + right_entity)) {
+            return Ok(limit.double);
+        } else {
+            return Err(LimitError::new(LimitErrorKind::WrongEntity));
         }
     }
 

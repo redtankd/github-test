@@ -8,7 +8,9 @@ edition = "2018"
 
 [dependencies]
 rand = "0.7.3"
-failure = "0.1.6"
+actix-web = "2"
+actix-rt = "1"
+actix = "0.9"
 
 [build-dependencies]
 rustc_version = "0.2.3"
