@@ -54,7 +54,7 @@ fn test_weak() {
     let order_key1 = order_book.slots.insert(order_slot1);
     let order_key2 = order_book.slots.insert(order_slot2);
 
-    assert_eq!(1, order_slot1.ty);
+    assert_eq!(1, order_slot1.lock().unwrap().ty);
 }
 
 fn main() {
