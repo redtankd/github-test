@@ -32,6 +32,8 @@ clap = "2.33"
 rand = "0.7.3"
 slab = "0.4.2"
 
+redis = "0.15.1"
+
 [build-dependencies]
 
 rustc_version = "0.2.3"

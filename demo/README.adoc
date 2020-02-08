@@ -1,0 +1,17 @@
+installing redis
+installing webdis
+
+```fish
+begin
+   set -l IFS
+   redis-cli script load (cat redis-server.lua)
+end
+```
+note: fish splits command substitutions on newlines. This means that `(cat redis-server.lua)` is a list. When you pass a list to a command, each entry in the list becomes a separate argument. echo space-separates its arguments. If you want to prevent the splitting, you can temporarily set IFS to empty
+
+```bash
+redis-cli script load "$(cat redis-server.lua)"
+redis-cli evalsha aa31696dede63db3958dec818cb3952501d04701 1 1000041 34000
+```
+
+wrk -t2 -c200 --latency -s redis-wrk.lua  http://localhost:7379 -- aa31696dede63db3958dec818cb3952501d04701 100

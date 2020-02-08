@@ -1,11 +1,14 @@
 use std::convert::TryInto;
 use std::fs::File;
+use std::io;
 use std::io::prelude::*;
+use std::str::FromStr;
 
 use actix::prelude::*;
 use actix_web::{get, web, App, HttpServer, Responder};
 use log::info;
 use rand::{thread_rng, Rng};
+use redis::AsyncCommands;
 use serde::{Deserialize, Serialize};
 
 use limit::*;
@@ -18,7 +21,8 @@ pub struct LimitServer {
 impl LimitServer {
     pub fn new(entity_count: usize, entity_sqno_shift: usize) -> LimitServer {
         let mut rng = thread_rng();
-        let mut limit_manager = LimitManager::new(entity_count, entity_sqno_shift);
+        let mut limit_manager =
+            LimitManager::new(entity_count * (entity_count - 1) / 2, entity_sqno_shift);
         for i in 0..entity_count {
             for j in (i + 1)..entity_count {
                 let left_amount = rng.gen_range(1, 101) * 1000;
@@ -65,42 +69,50 @@ async fn index(
 }
 
 #[actix_rt::main]
-async fn main() -> std::io::Result<()> {
+async fn main() -> io::Result<()> {
     env_logger::init();
 
     let opts = clap::App::new("Limit Server")
-        .arg(clap::Arg::from_usage("-s 'Save Limit Manager'"))
-        .arg(clap::Arg::from_usage("-l 'Load Limit Manager'"))
+        .args_from_usage(
+            "-s            'Save Limit Manager to file'
+             -l            'Load Limit Manager from file'
+             --redis       'Save Limit Manager to redis'",
+        )
+        .arg(
+            clap::Arg::from_usage("-f [FILE] 'Location of archive'")
+                .default_value("limit_server.bin"),
+        )
+        .arg(
+            clap::Arg::from_usage("--count [COUNT] 'The number of Entities'")
+                .default_value("10000"),
+        )
+        .arg(
+            clap::Arg::from_usage(
+                "--shift [SHIFT] 'The shift of key, key = left sqno * shift + right sqno'",
+            )
+            .default_value("100000"),
+        )
         .get_matches();
 
+    let entity_count = usize::from_str(opts.value_of("count").unwrap()).unwrap();
+    let shift = usize::from_str(opts.value_of("shift").unwrap()).unwrap();
+    let file_name = opts.value_of("f").unwrap();
+
     if opts.is_present("s") {
-        info!("Initing limit server");
-        let limit_server = LimitServer::new(10000, 100000);
+        return save_file(entity_count, shift, file_name).await;
+    }
 
-        info!("Serializing limit server");
-        let encoded: Vec<u8> = bincode::serialize(&limit_server).unwrap();
-
-        info!("Saving limit server");
-        let mut file = File::create("limit_server.bin")?;
-        file.write_all(&encoded)?;
-        info!("Saving finished");
-
-        return Ok(());
+    if opts.is_present("redis") {
+        match save_redis(entity_count, shift).await {
+            Ok(_) => return Ok(()),
+            Err(e) => return Err(io::Error::new(io::ErrorKind::Other, e)),
+        }
     }
 
     let limit_server = if opts.is_present("l") {
-        info!("Loading limit server");
-        let mut file = File::open("limit_server.bin")?;
-        let size = file.metadata()?.len();
-        let mut decode: Vec<u8> = Vec::with_capacity(size.try_into().unwrap());
-        file.read_to_end(&mut decode)?;
-
-        info!("Deserializing limit server");
-        let ls = bincode::deserialize(&decode).unwrap();
-        info!("Deserializing finished");
-        ls
+        load_file(file_name).await?
     } else {
-        LimitServer::new(10000, 100000)
+        LimitServer::new(entity_count, shift)
     };
 
     let limit_server = limit_server.start();
@@ -112,4 +124,56 @@ async fn main() -> std::io::Result<()> {
         .bind("0.0.0.0:8080")?
         .run()
         .await
+}
+
+async fn save_file(entity_count: usize, shift: usize, file_name: &str) -> io::Result<()> {
+    info!("Creating a new limit server");
+    let limit_server = LimitServer::new(entity_count, shift);
+
+    info!("Serializing limit server");
+    let encoded: Vec<u8> = bincode::serialize(&limit_server).unwrap();
+
+    info!("Saving limit server");
+    let mut file = File::create(file_name)?;
+    file.write_all(&encoded)?;
+
+    info!("Saving finished");
+    Ok(())
+}
+
+async fn load_file(file_name: &str) -> io::Result<LimitServer> {
+    info!("Loading limit server");
+    let mut file = File::open(file_name)?;
+    let size = file.metadata()?.len();
+    let mut decode: Vec<u8> = Vec::with_capacity(size.try_into().unwrap());
+    file.read_to_end(&mut decode)?;
+
+    info!("Deserializing limit server");
+    let limit_server = bincode::deserialize(&decode).unwrap();
+
+    info!("Deserializing finished");
+    Ok(limit_server)
+}
+
+async fn save_redis(entity_count: usize, shift: usize) -> redis::RedisResult<()> {
+    info!("Creating a new limit server");
+    let limit_server = LimitServer::new(entity_count, shift);
+
+    info!("Saving limit server to a local default redis");
+
+    let client = redis::Client::open("redis://127.0.0.1/")?;
+    let mut conn = client.get_async_connection().await?;
+
+    for (k, v) in limit_server.limit_manager.get_limits() {
+        let f = vec![
+            ("left", v.get_left()),
+            ("right", v.get_right()),
+            ("double", v.get_double()),
+        ];
+        conn.hset_multiple(*k, &f).await?;
+    }
+
+    info!("Saving finished");
+
+    return Ok(());
 }

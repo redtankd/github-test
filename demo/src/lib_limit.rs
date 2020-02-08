@@ -52,6 +52,18 @@ impl TwoWayLimit {
         }
     }
 
+    pub fn get_left(&self) -> LimitAmount {
+        self.left
+    }
+
+    pub fn get_right(&self) -> LimitAmount {
+        self.right
+    }
+
+    pub fn get_double(&self) -> LimitAmount {
+        self.double
+    }
+
     pub fn try_deduct(&mut self, amount: LimitAmount) -> Result<(), LimitError> {
         if self.double >= amount {
             self.left -= amount;
@@ -105,6 +117,10 @@ impl LimitManager {
         } else {
             return Err(LimitError::new(LimitErrorKind::WrongEntity));
         }
+    }
+
+    pub fn get_limits(&self) -> &HashMap<usize, TwoWayLimit> {
+        return &self.limits;
     }
 
     pub fn insert(
