@@ -5,10 +5,9 @@ use std::io::prelude::*;
 use std::str::FromStr;
 
 use actix::prelude::*;
-use actix_web::{get, web, App, HttpServer, Responder};
+use actix_web::{get, web, App, HttpResponse, HttpServer, Responder};
 use log::info;
 use rand::{thread_rng, Rng};
-use redis::AsyncCommands;
 use serde::{Deserialize, Serialize};
 
 use limit::*;
@@ -21,6 +20,7 @@ pub struct LimitServer {
 impl LimitServer {
     pub fn new(entity_count: usize, entity_sqno_shift: usize) -> LimitServer {
         let mut rng = thread_rng();
+
         let mut limit_manager =
             LimitManager::new(entity_count * (entity_count - 1) / 2, entity_sqno_shift);
         for i in 0..entity_count {
@@ -30,6 +30,13 @@ impl LimitServer {
                 let _ = limit_manager.insert(i, left_amount, j, right_amount);
             }
         }
+
+        info!(
+            "Creating a new Limit Manager with {} items and the shift is {}.",
+            limit_manager.get_limits().len(),
+            limit_manager.get_shift()
+        );
+
         return LimitServer {
             limit_manager: limit_manager,
         };
@@ -62,9 +69,9 @@ async fn index(
         .send(Deduct(info.0, info.1, info.2))
         .await
     {
-        format!("ok")
+        HttpResponse::Ok()
     } else {
-        format!("error")
+        HttpResponse::NotFound()
     }
 }
 
@@ -103,7 +110,7 @@ async fn main() -> io::Result<()> {
     }
 
     if opts.is_present("redis") {
-        match save_redis(entity_count, shift).await {
+        match save_redis(entity_count, shift) {
             Ok(_) => return Ok(()),
             Err(e) => return Err(io::Error::new(io::ErrorKind::Other, e)),
         }
@@ -155,23 +162,27 @@ async fn load_file(file_name: &str) -> io::Result<LimitServer> {
     Ok(limit_server)
 }
 
-async fn save_redis(entity_count: usize, shift: usize) -> redis::RedisResult<()> {
+fn save_redis(entity_count: usize, shift: usize) -> redis::RedisResult<()> {
     info!("Creating a new limit server");
     let limit_server = LimitServer::new(entity_count, shift);
 
-    info!("Saving limit server to a local default redis");
+    info!("Starting mass inject");
 
-    let client = redis::Client::open("redis://127.0.0.1/")?;
-    let mut conn = client.get_async_connection().await?;
-
+    let mut pipe = redis::pipe();
     for (k, v) in limit_server.limit_manager.get_limits() {
         let f = vec![
             ("left", v.get_left()),
             ("right", v.get_right()),
             ("double", v.get_double()),
         ];
-        conn.hset_multiple(*k, &f).await?;
+        pipe.hset_multiple(*k, &f);
     }
+
+    info!("Saving limit server to a local default redis");
+
+    let client = redis::Client::open("redis://127.0.0.1/")?;
+    let mut conn = client.get_connection()?;
+    pipe.execute(&mut conn);
 
     info!("Saving finished");
 

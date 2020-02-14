@@ -10,23 +10,20 @@ edition = "2018"
 name = "limit"
 path = "src/lib_limit.rs"
 
-[[bin]]
-
-name = "limit_server"
-path = "src/limit_server.rs"
-
 [dependencies]
 
-futures = "0.3.1"
-tokio = { version = "0.2.11", features = ["full"] }
+futures = "0.3"
+tokio = { version = "0.2", features = ["full"] }
+http = "0.2"
 actix-web = "2"
 actix-rt = "1"
 actix = "0.9"
+reqwest = { version = "0.10", features = ["blocking", "json"] }
 
 serde = "1.0"
 bincode = "1.2.1"
 
-log = "0.4.0"
+log = "0.4.8"
 env_logger = "0.7.1"
 clap = "2.33"
 rand = "0.7.3"
