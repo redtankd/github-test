@@ -16,7 +16,7 @@ jobs:
     - rust: nightly
       env:
         - CARGO_INCREMENTAL=0
-        - RUSTFLAGS="-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads"
+        - RUSTFLAGS="-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off"
 
 services:
   - postgresql
