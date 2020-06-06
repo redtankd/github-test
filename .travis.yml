@@ -52,7 +52,7 @@ script:
 after_success:
   - |
     if [ "$TRAVIS_RUST_VERSION" = "nightly" ]; then
-      ./grcov . -s . -t coveralls+ --llvm --branch --ignore-not-existing \
+      grcov . -s . -t coveralls+ --llvm --branch --ignore-not-existing \
         --excl-start "#\[test\]" \
         --service-name travis-ci \
         --service-job-id $TRAVIS_JOB_ID \
