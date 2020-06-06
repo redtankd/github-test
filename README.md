@@ -22,13 +22,18 @@ cargo install grcov
 ```
 export CARGO_INCREMENTAL=0
 
-# Nightly
-export RUSTFLAGS="-Zprofile -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off -Zpanic_abort_tests -Cpanic=abort"
+# -Cpanic=abort doesn't work for dylib
+export RUSTFLAGS="-Zprofile -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off -Zpanic_abort_tests"
+
 export RUSTDOCFLAGS="-Cpanic=abort"
 
 cargo +nightly test --all
 
 grcov . -o ./target/debug/coverage/ -s . -t html --llvm --branch --ignore-not-existing --excl-start "#\[test\]"
+
+# -t html doesn't report branch parsing now, so we use lcov 
+grcov . -o ./target/debug/lcov.info -s . -t lcov --llvm --branch --ignore-not-existing --ignore "$HOME/.cargo/*" --excl-start "#\[test\]"
+genhtml -o ./target/debug/coverage/ --show-details --branch-coverage --highlight --ignore-errors source --legend ./target/debug/lcov.info
 ```
 
 ### Solution 2: kcov

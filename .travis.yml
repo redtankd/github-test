@@ -16,7 +16,7 @@ jobs:
     - rust: nightly
       env:
         - CARGO_INCREMENTAL=0
-        - RUSTFLAGS="-Zprofile -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off -Zpanic_abort_tests -Cpanic=abort"
+        - RUSTFLAGS="-Zprofile -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off -Zpanic_abort_tests"
         - RUSTDOCFLAGS="-Cpanic=abort"
 services:
   - postgresql
@@ -53,7 +53,6 @@ after_success:
   - |
     if [ "$TRAVIS_RUST_VERSION" = "nightly" ]; then
       ./grcov . -s . -t coveralls+ --llvm --branch --ignore-not-existing \
-        --ignore "$HOME/.cargo/*" \
         --excl-start "#\[test\]" \
         --service-name travis-ci \
         --service-job-id $TRAVIS_JOB_ID \
