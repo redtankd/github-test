@@ -54,14 +54,11 @@ after_success:
 
       ./grcov . -s . -t coveralls+  --ignore "$HOME/.cargo/*" --ignore-not-existing \
         --service-name travis-ci \
-        --service-job-number $TRAVIS_JOB_ID \
+        --service-job-id $TRAVIS_JOB_ID \
         --service-pull-request $TRAVIS_PULL_REQUEST \
         --commit-sha $TRAVIS_COMMIT \
         --vcs-branch $TRAVIS_BRANCH \
         --token $COVERALLS_REPO_TOKEN > coveralls.json
-
-      # Coveralls API requires service_job_id
-      sed -i "s%service_job_number%service_job_id%" coveralls.json
 
       curl "https://coveralls.io/api/v1/jobs" -F json_file=@coveralls.json
     fi
