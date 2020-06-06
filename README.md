@@ -15,7 +15,6 @@ Only work in nightly now.
 
 ```
 cargo install grcov
-brew install lcov
 ```
 
 #### Testing
@@ -24,15 +23,17 @@ brew install lcov
 export CARGO_INCREMENTAL=0
 
 # Nightly
-export RUSTFLAGS="-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Zno-landing-pads"
+export RUSTFLAGS="-Zprofile -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off -Zpanic_abort_tests -Cpanic=abort"
+export RUSTDOCFLAGS="-Cpanic=abort"
 
 cargo +nightly test --all
 
-grcov . -s . -t lcov --ignore "$HOME/.cargo/*" --ignore-not-existing  > lcov.info
-genhtml -o target/cov --show-details --highlight --ignore-errors source --legend lcov.info
+grcov . -o ./target/debug/coverage/ -s . -t html --llvm --branch --ignore-not-existing --excl-start "#\[test\]"
 ```
 
 ### Solution 2: kcov
+
+Doesn't work in Mac OS
 
 #### Installing kcov
 
@@ -71,5 +72,3 @@ genhtml -o target/cov --show-details --highlight --ignore-errors source --legend
 ```
 cargo install cargo-kcov
 ```
-
-Doesn't work in macOS

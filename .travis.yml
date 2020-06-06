@@ -16,8 +16,8 @@ jobs:
     - rust: nightly
       env:
         - CARGO_INCREMENTAL=0
-        - RUSTFLAGS="-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off"
-
+        - RUSTFLAGS="-Zprofile -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off -Zpanic_abort_tests -Cpanic=abort"
+        - RUSTDOCFLAGS="-Cpanic=abort"
 services:
   - postgresql
 
@@ -36,6 +36,8 @@ install:
   # Installing diesel console command
   - cargo install --force diesel_cli
 
+  - cargo install grcov
+
 before_script:
   - psql -h localhost -U postgres -c "create user diesel createdb password 'diesel'"
   - psql -h localhost -U postgres -c "create database diesel with owner diesel"
@@ -50,9 +52,9 @@ script:
 after_success:
   - |
     if [ "$TRAVIS_RUST_VERSION" = "nightly" ]; then
-      curl -L https://github.com/mozilla/grcov/releases/latest/download/grcov-linux-x86_64.tar.bz2 | tar jxf -
-
-      ./grcov . -s . -t coveralls+  --ignore "$HOME/.cargo/*" --ignore-not-existing \
+      ./grcov . -s . -t coveralls+ --llvm --branch --ignore-not-existing \
+        --ignore "$HOME/.cargo/*" \
+        --excl-start "#\[test\]" \
         --service-name travis-ci \
         --service-job-id $TRAVIS_JOB_ID \
         --service-pull-request $TRAVIS_PULL_REQUEST \
