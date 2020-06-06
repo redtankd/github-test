@@ -45,7 +45,6 @@ before_script:
 
 script:
   - cargo build --verbose
-  - cargo clean
   - cargo test --all --verbose
 
 after_success:
@@ -53,6 +52,7 @@ after_success:
     if [ "$TRAVIS_RUST_VERSION" = "nightly" ]; then
       grcov . -s . -t coveralls+ --llvm --branch --ignore-not-existing \
         --excl-start "#\[test\]" \
+        --excl-br-start "#\[test\]" \
         --service-name travis-ci \
         --service-job-id $TRAVIS_JOB_ID \
         --service-pull-request $TRAVIS_PULL_REQUEST \

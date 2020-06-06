@@ -29,7 +29,7 @@ export RUSTDOCFLAGS="-Cpanic=abort"
 
 cargo +nightly test --all
 
-grcov . -o ./target/debug/coverage/ -s . -t html --llvm --branch --ignore-not-existing --excl-start "#\[test\]"
+grcov . -o ./target/debug/coverage/ -s . -t html --llvm --branch --ignore-not-existing --excl-start "#\[test\]" --excl-br-start "#\[test\]"
 
 # -t html doesn't report branch parsing now, so we use lcov 
 grcov . -o ./target/debug/lcov.info -s . -t lcov --llvm --branch --ignore-not-existing --ignore "$HOME/.cargo/*" --excl-start "#\[test\]"
