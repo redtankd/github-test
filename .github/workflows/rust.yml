@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     # this job running in a docker container
-    container: postgres #ubuntu:latest
+    container: postgres #ubuntu
 
     # service containers to run with this job
     services:
@@ -32,11 +32,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: Harmon758/postgresql-action@v1.0.0
+      # - uses: Harmon758/postgresql-action@v1.0.0
 
       - run: mkdir -p $HOME/.local/bin
       - run: mkdir -p $HOME/.cargo/bin
       - run: echo "$HOME/.local/bin:$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - run: ping postgres
+      - run: env
 
       # - run: cargo install grcov
 
@@ -47,10 +50,10 @@ jobs:
       # Initializing database
       - run: psql -h postgres -U postgres -c "create user diesel createdb password 'diesel'"
       - run: psql -h postgres -U postgres -c "create database diesel with owner diesel"
-      - run: cargo install --force diesel_cli
-      - run: cd $GITHUB_WORKSPACE/database/diesel
-      - run: diesel setup
-      - run: cd $GITHUB_WORKSPACE
+      # - run: cargo install --force diesel_cli
+      # - run: cd $GITHUB_WORKSPACE/database/diesel
+      # - run: diesel setup
+      # - run: cd $GITHUB_WORKSPACE
 
       # - name: Build
         # run: cargo build --verbose
