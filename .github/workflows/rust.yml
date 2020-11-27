@@ -37,11 +37,11 @@ jobs:
       - run: mkdir -p $HOME/.cargo/bin
       - run: echo "$HOME/.local/bin:$HOME/.cargo/bin" >> $GITHUB_PATH
 
-      - run: cargo install grcov
+      # - run: cargo install grcov
 
       # Installing Protobuf
-      - run: curl -L "https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOBUF_VERSION/protoc-$PROTOBUF_VERSION-linux-x86_64.zip" -o protobuf-release.zip
-      - run: sudo unzip protobuf-release.zip -d /usr/local
+      # - run: curl -L "https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOBUF_VERSION/protoc-$PROTOBUF_VERSION-linux-x86_64.zip" -o protobuf-release.zip
+      # - run: sudo unzip protobuf-release.zip -d /usr/local
 
       # Initializing database
       - run: psql -h postgres -U postgres -c "create user diesel createdb password 'diesel'"
@@ -52,7 +52,7 @@ jobs:
       - run: cd $GITHUB_WORKSPACE
 
       - name: Build
-        run: cargo build --verbose
+        # run: cargo build --verbose
         
       - name: Run tests
-        run: cargo test --verbose
+        # run: cargo test --verbose
