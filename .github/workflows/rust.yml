@@ -53,7 +53,7 @@ jobs:
       # - run: sudo unzip protobuf-release.zip -d /usr/local
 
       # Initializing database
-      - run: psql -h localhost -U postgres -W postgres -c "create user diesel createdb password 'diesel'"
+      - run: psql -h localhost -U postgres -c "create user diesel createdb password 'diesel'"
       - run: psql -h localhost -U postgres -W postgres -c "create database diesel with owner diesel"
       # - run: cargo install --force diesel_cli
       # - run: cd $GITHUB_WORKSPACE/database/diesel
