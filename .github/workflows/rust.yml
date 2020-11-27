@@ -15,26 +15,26 @@ jobs:
     runs-on: ubuntu-latest
 
     # this job running in a docker container
-    container: ubuntu
+    container: postgres:12
 
     # service containers to run with this job
     services:
       # label used to access the service container
       postgres:
         # Docker Hub image
-        image: postgres
+        image: postgres:12
         # Set health checks to wait until postgres has started
-        # options: >-
-        #   --health-cmd pg_isready
-        #   --health-interval 10s
-        #   --health-timeout 5s
-        #   --health-retries 5
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - uses: actions/checkout@v2
       # - uses: Harmon758/postgresql-action@v1.0.0
 
-      - run: apt-get update && apt-get install --yes --no-install-recommends postgresql-client
+      # - run: apt-get update && apt-get install --yes --no-install-recommends postgresql-client
 
       - run: mkdir -p $HOME/.local/bin
       - run: mkdir -p $HOME/.cargo/bin
