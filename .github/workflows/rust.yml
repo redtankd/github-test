@@ -15,14 +15,16 @@ jobs:
     runs-on: ubuntu-latest
 
     # this job running in a docker container
-    container: postgres:12
+    container: postgres:9.6.20
 
     # service containers to run with this job
     services:
       # label used to access the service container
       postgres:
         # Docker Hub image
-        image: postgres:12
+        image: postgres:9.6.20
+        env:
+          POSTGRES_PASSWORD: postgres
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
