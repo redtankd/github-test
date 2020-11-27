@@ -8,23 +8,22 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  PATH: $HOME/.local/bin:$HOME/.cargo/bin:$PATH
   PROTOBUF_VERSION: 3.11.2
 
 jobs:
-  build:
-
+  build_and_test:
     runs-on: ubuntu-latest
 
-#    services:
-#      postgres:
-#        image: postgres
+    services:
+      postgres:
+        image: postgres
 
     steps:
       - uses: actions/checkout@v2
 
       - run: mkdir -p $HOME/.local/bin
       - run: mkdir -p $HOME/.cargo/bin
+      - run: echo "$HOME/.local/bin:$HOME/.cargo/bin" >> $GITHUB_PATH
 
       - run: cargo install grcov
 
@@ -32,11 +31,10 @@ jobs:
       - run: curl -L "https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOBUF_VERSION/protoc-$PROTOBUF_VERSION-linux-x86_64.zip" -o protobuf-release.zip
       - run: sudo unzip protobuf-release.zip -d /usr/local
 
-      # Installing diesel console command
-      - run: cargo install --force diesel_cli
       # Initializing database
       - run: psql -h localhost -U postgres -c "create user diesel createdb password 'diesel'"
       - run: psql -h localhost -U postgres -c "create database diesel with owner diesel"
+      - run: cargo install --force diesel_cli
       - run: cd $GITHUB_WORKSPACE/database/diesel
       - run: diesel setup
       - run: cd $GITHUB_WORKSPACE
