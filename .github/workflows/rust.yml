@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     # this job running in a docker container
-    container: ubuntu:latest
+    container: postgres #ubuntu:latest
 
     # service containers to run with this job
     services:
