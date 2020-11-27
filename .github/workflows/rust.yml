@@ -14,11 +14,21 @@ jobs:
   build_and_test:
     runs-on: ubuntu-latest
 
-    container: rust-test
+    # this job running in a docker container
+    container: ubuntu:latest
 
+    # service containers to run with this job
     services:
+      # label used to access the service container
       postgres:
+        # Docker Hub image
         image: postgres
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - uses: actions/checkout@v2
@@ -34,8 +44,8 @@ jobs:
       - run: sudo unzip protobuf-release.zip -d /usr/local
 
       # Initializing database
-      - run: psql -h localhost -U postgres -c "create user diesel createdb password 'diesel'"
-      - run: psql -h localhost -U postgres -c "create database diesel with owner diesel"
+      - run: psql -h postgres -U postgres -c "create user diesel createdb password 'diesel'"
+      - run: psql -h postgres -U postgres -c "create database diesel with owner diesel"
       - run: cargo install --force diesel_cli
       - run: cd $GITHUB_WORKSPACE/database/diesel
       - run: diesel setup
