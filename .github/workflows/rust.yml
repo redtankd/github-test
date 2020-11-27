@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     # this job running in a docker container
-    container: postgres:9.6.20
+    # container: postgres:9.6.20
 
     # service containers to run with this job
     services:
@@ -31,6 +31,8 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+        ports:
+          - 5432:5432
 
     steps:
       - uses: actions/checkout@v2
@@ -51,8 +53,8 @@ jobs:
       # - run: sudo unzip protobuf-release.zip -d /usr/local
 
       # Initializing database
-      - run: psql -h postgres -U postgres -c "create user diesel createdb password 'diesel'"
-      - run: psql -h postgres -U postgres -c "create database diesel with owner diesel"
+      - run: psql -h localhost -U postgres -W postgres -c "create user diesel createdb password 'diesel'"
+      - run: psql -h localhost -U postgres -W postgres -c "create database diesel with owner diesel"
       # - run: cargo install --force diesel_cli
       # - run: cd $GITHUB_WORKSPACE/database/diesel
       # - run: diesel setup
