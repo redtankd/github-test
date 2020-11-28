@@ -43,9 +43,8 @@ jobs:
       - run: |
           apt-get update 
           apt-get install --yes software-properties-common pkg-config curl zip git g++ cmake cmake-data postgresql-client
-        with:
-          env:
-            DEBIAN_FRONTEND: noninteractive
+        env:
+          DEBIAN_FRONTEND: noninteractive
 
       # Installing Rust
       - uses: actions-rs/toolchain@v1
