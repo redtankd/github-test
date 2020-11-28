@@ -24,25 +24,25 @@ jobs:
     container: postgres
 
     # service containers to run with this job
-    services:
-      # label used to access the service container
-      postgres:
-        # Docker Hub image
-        image: postgres
-        # no POSTGRES_PASSWORD, health check would fail.
-        env:
-          POSTGRES_PASSWORD: ${{ env.PGPASSWORD }}
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+    # services:
+    #   # label used to access the service container
+    #   postgres:
+    #     # Docker Hub image
+    #     image: postgres
+    #     # no POSTGRES_PASSWORD, health check would fail.
+    #     env:
+    #       POSTGRES_PASSWORD: ${{ env.PGPASSWORD }}
+    #     # Set health checks to wait until postgres has started
+    #     options: >-
+    #       --health-cmd pg_isready
+    #       --health-interval 10s
+    #       --health-timeout 5s
+    #       --health-retries 5
 
     steps:
       - run: |
           apt-get update 
-          apt-get install --yes --no-install-recommends curl zip
+          apt-get install --yes --no-install-recommends software-properties-common git curl zip
 
       # Installing Rust
       - uses: actions-rs/toolchain@v1
@@ -57,27 +57,27 @@ jobs:
           cargo install --force diesel_cli
 
       # Installing Protobuf
-      - uses: wei/curl@v1
-        with:
-          args: -L "https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOBUF_VERSION/protoc-$PROTOBUF_VERSION-linux-x86_64.zip" -o protobuf-release.zip
-      - uses: TonyBogdanov/zip@1.0
-        with:
-          args: unzip protobuf-release.zip -d /usr/local
+      # - uses: wei/curl@v1
+      #   with:
+      #     args: -L "https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOBUF_VERSION/protoc-$PROTOBUF_VERSION-linux-x86_64.zip" -o protobuf-release.zip
+      # - uses: TonyBogdanov/zip@1.0
+      #   with:
+      #     args: unzip protobuf-release.zip -d /usr/local
 
       # Installing PostgresSQL's client
       # now we use postgres container
       # - run: apt-get update && apt-get install --yes --no-install-recommends postgresql-client
 
-      - uses: actions/checkout@v2
+      # - uses: actions/checkout@v2
 
       # Initializing database
-      - run: |
-          psql -c "create user diesel createdb password 'diesel'"
-          psql -c "create database diesel with owner diesel"
-          cd $GITHUB_WORKSPACE/database/diesel
-          diesel setup
-          cd $GITHUB_WORKSPACE
+      # - run: |
+      #     psql -c "create user diesel createdb password 'diesel'"
+      #     psql -c "create database diesel with owner diesel"
+      #     cd $GITHUB_WORKSPACE/database/diesel
+      #     diesel setup
+      #     cd $GITHUB_WORKSPACE
 
-      - run: cargo build --verbose
+      # - run: cargo build --verbose
         
-      - run: cargo test --verbose
+      # - run: cargo test --verbose
