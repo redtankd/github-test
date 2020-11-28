@@ -44,10 +44,10 @@ jobs:
 
       # - run: apt-get update && apt-get install --yes --no-install-recommends postgresql-client
 
-      - run: |
-        mkdir -p $HOME/.local/bin
-        mkdir -p $HOME/.cargo/bin
-        echo "$HOME/.local/bin:$HOME/.cargo/bin" >> $GITHUB_PATH
+      - run: | 
+          mkdir -p $HOME/.local/bin
+          mkdir -p $HOME/.cargo/bin
+          echo "$HOME/.local/bin:$HOME/.cargo/bin" >> $GITHUB_PATH
 
       # - run: cargo install grcov
 
@@ -57,8 +57,8 @@ jobs:
 
       # Initializing database
       - run: |
-        psql -c "create user diesel createdb password 'diesel'"
-        psql -c "create database diesel with owner diesel"
+          psql -c "create user diesel createdb password 'diesel'"
+          psql -c "create database diesel with owner diesel"
       # - run: cargo install --force diesel_cli
       # - run: cd $GITHUB_WORKSPACE/database/diesel
       # - run: diesel setup
