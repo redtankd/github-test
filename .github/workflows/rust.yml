@@ -40,6 +40,10 @@ jobs:
           --health-retries 5
 
     steps:
+      - run: |
+          apt-get update 
+          apt-get install --yes --no-install-recommends curl zip
+
       # Installing Rust
       - uses: actions-rs/toolchain@v1
         with:
