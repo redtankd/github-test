@@ -22,11 +22,10 @@ jobs:
       # label used to access the service container
       postgres:
         # Docker Hub image
-        image: postgres #:9.6.20
-        env:
-          POSTGRES_PASSWORD: postgres
-        # ports:
-          # - 5432:5432
+        image: postgres
+        # no POSTGRES_PASSWORD, health check would fail.
+        # env:
+        #   POSTGRES_PASSWORD: postgres
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
@@ -36,7 +35,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      # - uses: Harmon758/postgresql-action@v1.0.0
 
       # - run: apt-get update && apt-get install --yes --no-install-recommends postgresql-client
 
