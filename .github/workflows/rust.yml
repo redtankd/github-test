@@ -47,16 +47,16 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
 
       # Installing Rust
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-      - uses: Swatinem/rust-cache@v1
-      - run: | 
-          mkdir -p $HOME/.local/bin
-          mkdir -p $HOME/.cargo/bin
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-          cargo install --force grcov
-          cargo install --force diesel_cli --no-default-features --features postgres
+      # - uses: actions-rs/toolchain@v1
+      #   with:
+      #     toolchain: stable
+      # - uses: Swatinem/rust-cache@v1
+      # - run: | 
+      #     mkdir -p $HOME/.local/bin
+      #     mkdir -p $HOME/.cargo/bin
+      #     echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+      #     cargo install grcov
+      #     cargo install diesel_cli --no-default-features --features postgres
 
       # Installing Protobuf
       - run: |
@@ -67,7 +67,8 @@ jobs:
 
       # Initializing database
       - run: |
-          psql -c "create user diesel createdb password 'diesel'"
+          psql --version 
+          psql -h postgres -c "create user diesel createdb password 'diesel'"
           psql -c "create database diesel with owner diesel"
           cd $GITHUB_WORKSPACE/database/diesel
           diesel setup
