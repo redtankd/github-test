@@ -55,8 +55,13 @@ jobs:
 #          cargo install --force diesel_cli
 
       # Installing Protobuf
-      - run: curl -L "https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOBUF_VERSION/protoc-$PROTOBUF_VERSION-linux-x86_64.zip" -o protobuf-release.zip
-      - run: unzip protobuf-release.zip -d /usr/local
+      - uses: wei/curl@v1
+        with:
+          args: -L "https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOBUF_VERSION/protoc-$PROTOBUF_VERSION-linux-x86_64.zip" -o protobuf-release.zip
+      - uses: TonyBogdanov/zip@1
+        with:
+          args: unzip protobuf-release.zip -d /usr/local
+      
 
       # Initializing database
       - run: |
