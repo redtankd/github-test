@@ -42,7 +42,7 @@ jobs:
     steps:
       - run: |
           apt-get update 
-          apt-get install --yes software-properties-common pkg-config curl zip git g++ cmake cmake-data
+          apt-get install --yes software-properties-common pkg-config curl zip git g++ cmake cmake-data postgresql-client
 
       # Installing Rust
       - uses: actions-rs/toolchain@v1
