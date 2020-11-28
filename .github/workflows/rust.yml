@@ -75,7 +75,7 @@ jobs:
       # Initializing database
       - run: |
           psql --version 
-          psql -h postgres -c "create user diesel createdb password 'diesel'"
+          psql -c "create user diesel createdb password 'diesel'"
           psql -c "create database diesel with owner diesel"
           cd $GITHUB_WORKSPACE/database/diesel
           diesel setup
