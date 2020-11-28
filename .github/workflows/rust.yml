@@ -9,13 +9,14 @@ on:
 env:
   CARGO_TERM_COLOR: always
   PROTOBUF_VERSION: 3.11.2
+  MY_POSTGRES_PASSWORD: postgres
 
 jobs:
   build_and_test:
     runs-on: ubuntu-latest
 
     # this job running in a docker container
-    container: postgres #:9.6.20
+    container: postgres
 
     # service containers to run with this job
     services:
@@ -24,8 +25,8 @@ jobs:
         # Docker Hub image
         image: postgres
         # no POSTGRES_PASSWORD, health check would fail.
-        # env:
-        #   POSTGRES_PASSWORD: postgres
+        env:
+          POSTGRES_PASSWORD: $MY_POSTGRES_PASSWORD
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
@@ -52,6 +53,8 @@ jobs:
 
       # Initializing database
       - run: psql -h postgres -U postgres -c "create user diesel createdb password 'diesel'"
+        env: 
+          PGPASSWORD: $MY_POSTGRES_PASSWORD
       - run: psql -h postgres -U postgres -c "create database diesel with owner diesel"
       # - run: cargo install --force diesel_cli
       # - run: cd $GITHUB_WORKSPACE/database/diesel
