@@ -49,8 +49,8 @@ jobs:
           mkdir -p $HOME/.local/bin
           mkdir -p $HOME/.cargo/bin
           echo "$HOME/.local/bin:$HOME/.cargo/bin" >> $GITHUB_PATH
-        cargo install --force grcov
-        cargo install --force diesel_cli
+          cargo install --force grcov
+          cargo install --force diesel_cli
 
       # Installing Protobuf
       - uses: wei/curl@v1
