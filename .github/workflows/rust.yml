@@ -8,8 +8,13 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+
   PROTOBUF_VERSION: 3.11.2
-  MY_POSTGRES_PASSWORD: postgres
+
+  # for postgres client's connection parameter
+  PGHOST: postgres
+  PGUSER: postgres
+  PGPASSWORD: postgres
 
 jobs:
   build_and_test:
@@ -26,7 +31,7 @@ jobs:
         image: postgres
         # no POSTGRES_PASSWORD, health check would fail.
         env:
-          POSTGRES_PASSWORD: $MY_POSTGRES_PASSWORD
+          POSTGRES_PASSWORD: $PGPASSWORD
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
@@ -39,11 +44,10 @@ jobs:
 
       # - run: apt-get update && apt-get install --yes --no-install-recommends postgresql-client
 
-      - run: mkdir -p $HOME/.local/bin
-      - run: mkdir -p $HOME/.cargo/bin
-      - run: echo "$HOME/.local/bin:$HOME/.cargo/bin" >> $GITHUB_PATH
-
-      - run: env
+      - run: |
+        mkdir -p $HOME/.local/bin
+        mkdir -p $HOME/.cargo/bin
+        echo "$HOME/.local/bin:$HOME/.cargo/bin" >> $GITHUB_PATH
 
       # - run: cargo install grcov
 
@@ -52,10 +56,9 @@ jobs:
       # - run: sudo unzip protobuf-release.zip -d /usr/local
 
       # Initializing database
-      - run: psql -h postgres -U postgres -c "create user diesel createdb password 'diesel'"
-        env: 
-          PGPASSWORD: $MY_POSTGRES_PASSWORD
-      - run: psql -h postgres -U postgres -c "create database diesel with owner diesel"
+      - run: |
+        psql -c "create user diesel createdb password 'diesel'"
+        psql -c "create database diesel with owner diesel"
       # - run: cargo install --force diesel_cli
       # - run: cd $GITHUB_WORKSPACE/database/diesel
       # - run: diesel setup
