@@ -24,25 +24,28 @@ jobs:
     container: ubuntu
 
     # service containers to run with this job
-    # services:
-    #   # label used to access the service container
-    #   postgres:
-    #     # Docker Hub image
-    #     image: postgres
-    #     # no POSTGRES_PASSWORD, health check would fail.
-    #     env:
-    #       POSTGRES_PASSWORD: ${{ env.PGPASSWORD }}
-    #     # Set health checks to wait until postgres has started
-    #     options: >-
-    #       --health-cmd pg_isready
-    #       --health-interval 10s
-    #       --health-timeout 5s
-    #       --health-retries 5
+    services:
+      # label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres
+        # no POSTGRES_PASSWORD, health check would fail.
+        env:
+          POSTGRES_PASSWORD: ${{ env.PGPASSWORD }}
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - run: |
           apt-get update 
           apt-get install --yes software-properties-common pkg-config curl zip git g++ cmake cmake-data postgresql-client
+        with:
+          env:
+            DEBIAN_FRONTEND: noninteractive
 
       # Installing Rust
       - uses: actions-rs/toolchain@v1
