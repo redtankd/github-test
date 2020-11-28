@@ -42,7 +42,7 @@ jobs:
     steps:
       - run: |
           apt-get update 
-          apt-get install --yes --no-install-recommends software-properties-common git curl zip
+          apt-get install --yes software-properties-common pkg-config curl zip git g++ cmake cmake-data
 
       # Installing Rust
       - uses: actions-rs/toolchain@v1
