@@ -46,17 +46,24 @@ jobs:
         env:
           DEBIAN_FRONTEND: noninteractive
 
+      - uses: actions/cache@v2
+        with:
+          path: |
+              - ~/.cargo/bin/grcov
+              - ~/.cargo/bin/diesel
+          key: stable #${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          
       # Installing Rust
-      # - uses: actions-rs/toolchain@v1
-      #   with:
-      #     toolchain: stable
-      # - uses: Swatinem/rust-cache@v1
-      # - run: | 
-      #     mkdir -p $HOME/.local/bin
-      #     mkdir -p $HOME/.cargo/bin
-      #     echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-      #     cargo install grcov
-      #     cargo install diesel_cli --no-default-features --features postgres
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - uses: Swatinem/rust-cache@v1
+      - run: | 
+          mkdir -p $HOME/.local/bin
+          mkdir -p $HOME/.cargo/bin
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+          cargo install grcov
+          cargo install diesel_cli --no-default-features --features postgres
 
       # Installing Protobuf
       - run: |
