@@ -88,14 +88,14 @@ jobs:
 
       - run: cargo build --verbose
         
-      - if: matrix.toolchain != "nightly"
+      - if: matrix.toolchain != 'nightly'
         run: cargo test --verbose
 
-      - if: matrix.toolchain == "nightly"
+      - if: matrix.toolchain == 'nightly'
         uses: actions-rs/cargo@v1
         with:
           command: clean
-      - if: matrix.toolchain == "nightly"
+      - if: matrix.toolchain == 'nightly'
         uses: actions-rs/cargo@v1
         with:
           command: test
@@ -104,10 +104,10 @@ jobs:
           CARGO_INCREMENTAL: '0'
           RUSTFLAGS: '-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests'
           RUSTDOCFLAGS: '-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests'
-      - if: matrix.toolchain == "nightly"
+      - if: matrix.toolchain == 'nightly'
         id: coverage
         uses: actions-rs/grcov@v0.1
-      - if: matrix.toolchain == "nightly"
+      - if: matrix.toolchain == 'nightly'
         uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}

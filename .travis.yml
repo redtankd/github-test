@@ -50,18 +50,19 @@ script:
   - cargo build --verbose
   - cargo test --all --verbose
 
-after_success:
-  - |
-    if [ "$TRAVIS_RUST_VERSION" = "nightly" ]; then
-      grcov . -s . -t coveralls+ --llvm --branch --ignore-not-existing \
-        --excl-start "#\[test\]" \
-        --excl-br-start "#\[test\]" \
-        --service-name travis-ci \
-        --service-job-id $TRAVIS_JOB_ID \
-        --service-pull-request $TRAVIS_PULL_REQUEST \
-        --commit-sha $TRAVIS_COMMIT \
-        --vcs-branch $TRAVIS_BRANCH \
-        --token $COVERALLS_REPO_TOKEN > coveralls.json
+# move to github actions
+# after_success:
+#   - |
+#     if [ "$TRAVIS_RUST_VERSION" = "nightly" ]; then
+#       grcov . -s . -t coveralls+ --llvm --branch --ignore-not-existing \
+#         --excl-start "#\[test\]" \
+#         --excl-br-start "#\[test\]" \
+#         --service-name travis-ci \
+#         --service-job-id $TRAVIS_JOB_ID \
+#         --service-pull-request $TRAVIS_PULL_REQUEST \
+#         --commit-sha $TRAVIS_COMMIT \
+#         --vcs-branch $TRAVIS_BRANCH \
+#         --token $COVERALLS_REPO_TOKEN > coveralls.json
 
-      curl "https://coveralls.io/api/v1/jobs" -F json_file=@coveralls.json
-    fi
+#       curl "https://coveralls.io/api/v1/jobs" -F json_file=@coveralls.json
+#     fi
