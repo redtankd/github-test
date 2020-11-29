@@ -70,6 +70,10 @@ jobs:
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
           cargo install grcov
           cargo install diesel_cli --no-default-features --features postgres
+          echo
+          which grcov
+          which diesel
+          env
 
       # Installing Protobuf
       - run: |

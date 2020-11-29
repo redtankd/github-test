@@ -7,7 +7,6 @@ env:
     # install here to avoid `sudo`
     - PATH=$HOME/.local/bin:$HOME/.cargo/bin:$PATH
     - PROTOBUF_VERSION=3.11.2
-    - postgres=localhost
 
 jobs:
   include:
@@ -24,6 +23,8 @@ services:
 addons:
   apt:
     packages:
+  hosts:
+    - postgres
 
 install:
   - mkdir -p $HOME/.local/bin
