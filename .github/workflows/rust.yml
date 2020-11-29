@@ -52,17 +52,16 @@ jobs:
         env:
           DEBIAN_FRONTEND: noninteractive
 
+      # Installing Rust
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.toolchain }}
       - uses: actions/cache@v2
         with:
           path: |
               - $HOME/.cargo/bin/grcov
               - $HOME/.cargo/bin/diesel
-          key: ${{ matrix.toolchain }}
-          
-      # Installing Rust
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: ${{ matrix.toolchain }}
+          key: cargo-install-${{ runner.os }}-${{ matrix.toolchain }}
       - uses: Swatinem/rust-cache@v1
       - run: | 
           mkdir -p $HOME/.local/bin
@@ -70,10 +69,6 @@ jobs:
           echo "$HOME/.cargo/bin" >> $GITHUB_PATH
           cargo install grcov
           cargo install diesel_cli --no-default-features --features postgres
-          echo
-          which grcov
-          which diesel
-          env
 
       # Installing Protobuf
       - run: |
@@ -93,4 +88,27 @@ jobs:
 
       - run: cargo build --verbose
         
-      - run: cargo test --verbose
+      - if: matrix.toolchain != "nightly"
+        run: cargo test --verbose
+
+      - if: matrix.toolchain == "nightly"
+        uses: actions-rs/cargo@v1
+        with:
+          command: clean
+      - if: matrix.toolchain == "nightly"
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --verbose
+        env:
+          CARGO_INCREMENTAL: '0'
+          RUSTFLAGS: '-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests'
+          RUSTDOCFLAGS: '-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests'
+      - if: matrix.toolchain == "nightly"
+        id: coverage
+        uses: actions-rs/grcov@v0.1
+      - if: matrix.toolchain == "nightly"
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ${{ steps.coverage.outputs.report }}

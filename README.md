@@ -1,7 +1,7 @@
 README
 ===========
 
-[![Rust](https://github.com/redtankd/rust-test/workflows/Rust/badge.svg)]() [![Build Status](https://travis-ci.com/redtankd/rust-test.svg?branch=master)](https://travis-ci.com/redtankd/rust-test) [![Coverage Status](https://coveralls.io/repos/github/redtankd/rust-test/badge.svg?branch=master)](https://coveralls.io/github/redtankd/rust-test?branch=master)
+[![rust](https://github.com/redtankd/rust-test/workflows/Rust/badge.svg)](https://github.com/redtankd/rust-test/actions) [![Build Status](https://travis-ci.com/redtankd/rust-test.svg?branch=master)](https://travis-ci.com/redtankd/rust-test) [![Coverage Status](https://coveralls.io/repos/github/redtankd/rust-test/badge.svg?branch=master)](https://coveralls.io/github/redtankd/rust-test?branch=master)
 
 I'm learning Rust!
 
