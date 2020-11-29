@@ -1,4 +1,4 @@
-name: Rust
+name: rust-test
 
 on:
   push:
@@ -19,6 +19,12 @@ env:
 jobs:
   build_and_test:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        toolchain:
+          - stable
+          - nightly
 
     # this job running in a docker container
     container: ubuntu
@@ -49,14 +55,14 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: |
-              - ~/.cargo/bin/grcov
-              - ~/.cargo/bin/diesel
-          key: stable #${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+              - $HOME/.cargo/bin/grcov
+              - $HOME/.cargo/bin/diesel
+          key: ${{ matrix.toolchain }}
           
       # Installing Rust
       - uses: actions-rs/toolchain@v1
         with:
-          toolchain: stable
+          toolchain: ${{ matrix.toolchain }}
       - uses: Swatinem/rust-cache@v1
       - run: | 
           mkdir -p $HOME/.local/bin
