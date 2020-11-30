@@ -1,1 +1,10 @@
 output-type: lcov
+
+llvm: true
+
+branch: true
+
+ignore-not-existing: true
+
+excl-start: "#\[test\]" 
+excl-br-start: "#\[test\]" 
