@@ -98,7 +98,7 @@ jobs:
             cargo test --verbose
         env:
           CARGO_INCREMENTAL: '0'
-          RUSTFLAGS: '-Zprofile -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off -Zpanic_abort_tests -Cpanic=abort -Zinstrument-coverage'
+          RUSTFLAGS: '-Zprofile -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off -Zpanic_abort_tests -Zinstrument-coverage'
           RUSTDOCFLAGS: '-Cpanic=abort'
 
       - if: matrix.toolchain == 'nightly'
