@@ -99,9 +99,13 @@ jobs:
           CARGO_INCREMENTAL: '0'
           RUSTFLAGS: '-Zprofile -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off -Zpanic_abort_tests'
           RUSTDOCFLAGS: '-Cpanic=abort'
+
       - if: matrix.toolchain == 'nightly'
         id: coverage
         uses: actions-rs/grcov@v0.1
+        with:
+          config: .github/configs/grcov.yml
+          
       - if: matrix.toolchain == 'nightly'
         uses: coverallsapp/github-action@master
         with:
