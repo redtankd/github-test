@@ -5,3 +5,5 @@ llvm: true
 branch: true
 
 ignore-not-existing: true
+
+filter: covered
