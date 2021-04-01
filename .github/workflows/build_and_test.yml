@@ -97,9 +97,7 @@ jobs:
             cargo clean
             cargo test --verbose
         env:
-          CARGO_INCREMENTAL: '0'
-          RUSTFLAGS: '-Zprofile -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off -Zpanic_abort_tests -Zinstrument-coverage'
-          RUSTDOCFLAGS: '-Cpanic=abort'
+          RUSTFLAGS: '-Zinstrument-coverage'
 
       - if: matrix.toolchain == 'nightly'
         id: coverage

@@ -13,16 +13,12 @@ jobs:
     - rust: stable
     - rust: nightly
       env:
-        - CARGO_INCREMENTAL=0
-        - RUSTFLAGS="-Zprofile -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off -Zpanic_abort_tests"
-        - RUSTDOCFLAGS="-Cpanic=abort"
+        - RUSTFLAGS="-Zinstrument-coverage"
         
 services:
   - postgresql
 
 addons:
-  apt:
-    packages:
   hosts:
     - postgres
 
@@ -34,10 +30,12 @@ install:
   - curl -L "https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOBUF_VERSION/protoc-$PROTOBUF_VERSION-linux-x86_64.zip" -o protobuf-release.zip
   - sudo unzip protobuf-release.zip -d /usr/local
 
+  - rustup component add llvm-tools-preview
+
   # Installing diesel console command
   - cargo install --force diesel_cli
 
-  - cargo install grcov
+  - cargo install --force grcov
 
 before_script:
   - psql -h localhost -U postgres -c "create user diesel createdb password 'diesel'"
