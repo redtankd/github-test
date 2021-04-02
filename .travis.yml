@@ -7,59 +7,61 @@ addons:
   postgresql: "12"
   apt:
     packages:
-    - postgresql-12
+      - postgresql-12
+  hosts:
+    # Custom Host Names for diesel environment vars
+    - postgres
 
 services:
-- postgresql
+  - postgresql
 
 cache: cargo
 
 env:
   global:
-  # apps deployed here to avoid `sudo`
-  - PATH=$HOME/.local/bin:$HOME/.cargo/bin:$PATH
-  # postgresql
-  - PGPORT=5433
-  - PGUSER=travis
-  # protobuf
-  - PROTOBUF_VERSION=3.11.2
+    # apps deployed here to avoid `sudo`
+    - PATH=$HOME/.local/bin:$HOME/.cargo/bin:$PATH
+    # postgresql
+    - PGPORT=5433
+    - PGUSER=travis
+    # protobuf
+    - PROTOBUF_VERSION=3.11.2
 
 jobs:
   include:
-  - rust: stable
-  - rust: nightly
-    env:
-    - CARGO_INCREMENTAL = "0"
-    - RUSTFLAGS = "-Zinstrument-coverage -Zprofile -Zpanic_abort_tests -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off"
-    - RUSTDOCFLAGS = "-Cpanic=abort"
+    - rust: stable
+    - rust: nightly
+      env:
+        - CARGO_INCREMENTAL = "0"
+        - RUSTFLAGS = "-Zinstrument-coverage -Zprofile -Zpanic_abort_tests -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off"
+        - RUSTDOCFLAGS = "-Cpanic=abort"
 
 before_install:
-- mkdir -p $HOME/.local/bin
-- mkdir -p $HOME/.cargo/bin
+  - mkdir -p $HOME/.local/bin
+  - mkdir -p $HOME/.cargo/bin
 
 install:
-# Installing Protobuf
-- curl -L "https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOBUF_VERSION/protoc-$PROTOBUF_VERSION-linux-x86_64.zip" -o protobuf-release.zip
-- sudo unzip protobuf-release.zip -d /usr/local
+  # Installing Protobuf
+  - curl -L "https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOBUF_VERSION/protoc-$PROTOBUF_VERSION-linux-x86_64.zip" -o protobuf-release.zip
+  - sudo unzip protobuf-release.zip -d /usr/local
 
-- rustup component add llvm-tools-preview
+  - rustup component add llvm-tools-preview
 
-# Installing diesel console command
-- cargo install --force diesel_cli
+  # Installing diesel console command
+  - cargo install --force diesel_cli
 
-- cargo install --force grcov
+  - cargo install --force grcov
 
 before_script:
-- psql -c "create user diesel createdb password 'diesel'"
-- psql -c "create database diesel with owner diesel"
-- cd $TRAVIS_BUILD_DIR/database/diesel
-- diesel setup
-- cd $TRAVIS_BUILD_DIR
+  - psql -c "create user diesel createdb password 'diesel'"
+  - psql -c "create database diesel with owner diesel"
+  - cd $TRAVIS_BUILD_DIR/database/diesel
+  - diesel setup
+  - cd $TRAVIS_BUILD_DIR
 
 script:
-- cargo build --verbose
-- cargo test --all --verbose
-
+  - cargo build --verbose
+  - cargo test --all --verbose
 # move to github actions
 # after_success:
 #   - |
