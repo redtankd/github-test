@@ -43,7 +43,7 @@ mod tests {
     fn json() -> Result<(), postgres::error::Error> {
         dotenv().ok();
 
-        let host = env::var("PGHOST").expect("PGHOST must be set");
+        let host = env::var("POSTGRES_HOST").expect("POSTGRES_HOST must be set");
         let port = env::var("PGPORT").expect("PGPORT must be set");
         let user = env::var("POSTGRES_USER").expect("POSTGRES_USER must be set");
         let pwd = env::var("POSTGRES_PASSWD").expect("POSTGRES_PASSWD must be set");

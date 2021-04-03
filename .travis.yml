@@ -9,7 +9,7 @@ addons:
     packages:
       - postgresql-12
   hosts:
-    # Custom Host Names for diesel environment vars. It is the same as localhost.
+    # Custom Host Names for database demos' connection string in `.env` file. It is the same as localhost.
     - postgres
 
 services:
@@ -21,8 +21,7 @@ env:
   global:
     # apps deployed here to avoid `sudo`
     - PATH=$HOME/.local/bin:$HOME/.cargo/bin:$PATH
-    # postgresql' host and superuser.
-    - PGHOST=postgres
+    # postgresql' port and superuser. PGHOST couldn't be `postgres`, or psql required password.
     - PGPORT=5433
     - PGUSER=travis
     # protobuf
