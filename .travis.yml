@@ -22,8 +22,8 @@ env:
     # apps deployed here to avoid `sudo`
     - PATH=$HOME/.local/bin:$HOME/.cargo/bin:$PATH
     # postgresql
-    - PGPORT=5433
-    - PGUSER=travis
+    - PGPORT=5432
+    - PGUSER=postgres
     # protobuf
     - PROTOBUF_VERSION=3.11.2
 
