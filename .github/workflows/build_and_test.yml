@@ -13,7 +13,7 @@ env:
 
   # for postgres client's connection parameter
   PGHOST: postgres
-  PGHOST: 5432
+  PGPORT: 5432
   PGUSER: postgres
   PGPASSWORD: postgres
 
