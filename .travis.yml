@@ -4,10 +4,10 @@ dist: focal
 language: rust
 
 addons:
-  postgresql: "10"
+  postgresql: "12"
   apt:
     packages:
-      - postgresql-10
+      - postgresql-12
   hosts:
     # Custom Host Names for diesel environment vars
     - postgres
@@ -22,8 +22,8 @@ env:
     # apps deployed here to avoid `sudo`
     - PATH=$HOME/.local/bin:$HOME/.cargo/bin:$PATH
     # postgresql
-    - PGPORT=5432
-    - PGUSER=postgres
+    - PGPORT=5433
+    - PGUSER=travis
     # protobuf
     - PROTOBUF_VERSION=3.11.2
 
