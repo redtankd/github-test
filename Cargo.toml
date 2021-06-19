@@ -24,4 +24,6 @@ members = [
 
 	"database/diesel",
 	"database/postgres",
+
+	"demo-apps/limit-server"
 ]

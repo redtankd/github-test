@@ -1,3 +1,13 @@
+= A Demo app for Credit Service
+
+== Rust project
+
+A simple credit service app which is used to verify concept.
+
+== Redis 
+
+The redis server is used to compare the performance.
+
 installing redis
 installing webdis
 

@@ -25,8 +25,8 @@ impl LimitServer {
             LimitManager::new(entity_count * (entity_count - 1) / 2, entity_sqno_shift);
         for i in 0..entity_count {
             for j in (i + 1)..entity_count {
-                let left_amount = rng.gen_range(1, 101) * 1000;
-                let right_amount = rng.gen_range(1, 101) * 1000;
+                let left_amount = rng.gen_range(1..101) * 1000;
+                let right_amount = rng.gen_range(1..101) * 1000;
                 let _ = limit_manager.insert(i, left_amount, j, right_amount);
             }
         }
@@ -61,12 +61,14 @@ impl Handler<Deduct> for LimitServer {
 
 #[get("/{left}/{right}/{amount}")]
 async fn index(
-    info: web::Path<(usize, usize, LimitAmount)>,
+    path: web::Path<(usize, usize, LimitAmount)>,
     limit_server: web::Data<Addr<LimitServer>>,
 ) -> impl Responder {
+    let (left, right, amount) = path.into_inner();
+    
     if let Ok(Ok(())) = limit_server
         .get_ref()
-        .send(Deduct(info.0, info.1, info.2))
+        .send(Deduct(left, right, amount))
         .await
     {
         HttpResponse::Ok()

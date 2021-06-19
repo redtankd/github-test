@@ -61,27 +61,34 @@ extern crate test;
 //     // assert_eq!(1, order_slot1.lock().unwrap().ty);
 // }
 
-fn main() {
-    //     let mut slots = Slab::<Arc<Mutex<Order>>>::with_capacity(10_1000);
-    //     let order1 = Arc::new(Mutex::new(Order { id: 1, price: 100 }));
-    //     let key = slots.insert(order1);
+use std::thread;
+use std::time::Duration;
 
-    //     let (tx, rx) = channel::<Arc<Mutex<Order>>>();
+use actix_rt::System;
+use actix_web::{web, App, HttpResponse, HttpServer};
 
-    //     let handle = thread::spawn(move || {
-    //         let order1_l = rx.recv().unwrap();
-    //         let mut order1_l = order1_l.lock().unwrap();
-    //         println!("{}", order1_l.id);
-    //         order1_l.id = 2;
-    //     });
+fn main() -> std::io::Result<()> {
+    let runner = System::new();
+    let sys = System::current();
 
-    //     let _ = tx.send(slots.get(key).unwrap().clone());
+    thread::spawn(move || {
+        thread::sleep(Duration::from_secs(10));
+        println!("System is required to stop!");
+        sys.stop();
+    });
 
-    //     let _ = handle.join();
+    runner.block_on(async move {
+        HttpServer::new(|| {
+            App::new().service(web::resource("/").to(|| HttpResponse::Ok().body("data")))
+        })
+        .shutdown_timeout(5)
+        .workers(1)
+        .bind("127.0.0.1:8080")
+        .unwrap()
+        .run();
+    });
 
-    //     let order1 = slots.get(key).unwrap();
-
-    //     println!("{}", order1.lock().unwrap().id);
+    runner.run()
 }
 
 #[cfg(all(feature = "nightly", test))]
@@ -91,7 +98,7 @@ mod bench {
     use actix_web::{web, App, HttpResponse, HttpServer};
     use http::StatusCode;
     use std::io;
-    use std::sync::Once;
+    use std::sync::{mpsc, Once};
     use std::thread;
     use test::Bencher;
 
@@ -106,16 +113,26 @@ mod bench {
     #[bench]
     fn bench_http_server(b: &mut Bencher) -> io::Result<()> {
         setup();
+        let (tx, rx) = mpsc::channel();
 
         thread::spawn(move || {
-            let sys = System::new("http-server");
-            let _server =
-                HttpServer::new(|| App::new().route("/", web::get().to(|| HttpResponse::Ok())))
-                    .bind("127.0.0.1:8080")
-                    .unwrap()
-                    .shutdown_timeout(1)
-                    .run();
-            let _ = sys.run();
+            let runner = System::new();
+
+            // I think block_on() likes spawn() more.
+            runner.block_on(async move {
+                HttpServer::new(|| {
+                    App::new().service(web::resource("/").to(|| HttpResponse::Ok().body("ok")))
+                })
+                .shutdown_timeout(5)
+                .workers(1)
+                .bind("127.0.0.1:8080")
+                .unwrap()
+                .run();
+            });
+
+            let _ = tx.send(actix_rt::System::current());
+
+            let _ = runner.run();
         });
 
         thread::sleep(std::time::Duration::from_millis(100));
@@ -128,6 +145,9 @@ mod bench {
                 })
                 .is_ok());
         });
+
+        let sys = rx.recv().unwrap();
+        sys.stop();
 
         Ok(())
     }
