@@ -49,7 +49,7 @@ jobs:
     steps:
       - run: |
           apt-get update 
-          apt-get install --yes software-properties-common pkg-config curl zip git g++ cmake cmake-data postgresql-client libpq-dev
+          apt-get install --yes software-properties-common pkg-config curl zip git g++ cmake cmake-data postgresql-client libpq-dev libssl-dev
         env:
           DEBIAN_FRONTEND: noninteractive
 
