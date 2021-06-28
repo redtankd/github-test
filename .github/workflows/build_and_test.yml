@@ -98,18 +98,23 @@ jobs:
             cargo clean
             cargo test --verbose
         env:
-          CARGO_INCREMENTAL: '0'
-          RUSTFLAGS: '-Zinstrument-coverage -Zprofile -Zpanic_abort_tests -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off'
-          RUSTDOCFLAGS: '-Cpanic=abort'
+          # source-based coverage
+          RUSTFLAGS: "-Zinstrument-coverage"
+          LLVM_PROFILE_FILE: "coverage-%p-%m.profraw"
+          # .gcda profile
+          # CARGO_INCREMENTAL: '0'
+          # RUSTFLAGS: '-Zinstrument-coverage -Zprofile -Zpanic_abort_tests -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off'
+          # RUSTDOCFLAGS: '-Cpanic=abort'
 
-      - if: matrix.toolchain == 'nightly'
-        id: coverage
-        uses: actions-rs/grcov@v0.1
-        with:
-          config: .github/configs/grcov.yml
+      # move to .travis.yml
+      # - if: matrix.toolchain == 'nightly'
+      #   id: coverage
+      #   uses: actions-rs/grcov@v0.1
+      #   with:
+      #     config: .github/configs/grcov.yml
           
-      - if: matrix.toolchain == 'nightly'
-        uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: ${{ steps.coverage.outputs.report }}
+      # - if: matrix.toolchain == 'nightly'
+      #   uses: coverallsapp/github-action@master
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     path-to-lcov: ${{ steps.coverage.outputs.report }}

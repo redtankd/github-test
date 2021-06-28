@@ -1,3 +1,10 @@
+# Partner Queue Solution, which can be used completely for free.
+# https://docs.travis-ci.com/user/billing-overview/#partner-queue-solution
+os: linux
+
+arch:
+  - arm64
+
 # the default dist doesn't support grcov, so ubuntu 20.4 is used.
 dist: focal
 
@@ -15,8 +22,6 @@ addons:
 services:
   - postgresql
 
-cache: cargo
-
 env:
   global:
     # apps deployed here to avoid `sudo`
@@ -32,25 +37,30 @@ jobs:
     - rust: stable
     - rust: nightly
       env:
-        - CARGO_INCREMENTAL = "0"
-        - RUSTFLAGS = "-Zinstrument-coverage -Zprofile -Zpanic_abort_tests -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off"
-        - RUSTDOCFLAGS = "-Cpanic=abort"
+        # source-based coverage
+        - RUSTFLAGS="-Zinstrument-coverage"
+        - LLVM_PROFILE_FILE="coverage-%p-%m.profraw"
+        # .gcda profile
+        # - CARGO_INCREMENTAL="0"
+        # - RUSTFLAGS="-Zinstrument-coverage -Zprofile -Zpanic_abort_tests -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off"
+        # - RUSTDOCFLAGS="-Cpanic=abort"
+
+cache: cargo
 
 before_install:
   - mkdir -p $HOME/.local/bin
   - mkdir -p $HOME/.cargo/bin
 
 install:
+  - rustup component add llvm-tools-preview
+  - cargo install grcov
+
   # Installing Protobuf
   - curl -L "https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOBUF_VERSION/protoc-$PROTOBUF_VERSION-linux-x86_64.zip" -o protobuf-release.zip
   - sudo unzip protobuf-release.zip -d /usr/local
 
-  - rustup component add llvm-tools-preview
-
   # Installing diesel console command
-  - cargo install --force diesel_cli
-
-  - cargo install --force grcov
+  - cargo install diesel_cli
 
 before_script:
   - psql -c "create user diesel createdb password 'diesel'"
@@ -62,19 +72,19 @@ before_script:
 script:
   - cargo build --verbose
   - cargo test --all --verbose
-# move to github actions
-# after_success:
-#   - |
-#     if [ "$TRAVIS_RUST_VERSION" = "nightly" ]; then
-#       grcov . -s . -t coveralls+ --llvm --branch --ignore-not-existing \
-#         --excl-start "#\[test\]" \
-#         --excl-br-start "#\[test\]" \
-#         --service-name travis-ci \
-#         --service-job-id $TRAVIS_JOB_ID \
-#         --service-pull-request $TRAVIS_PULL_REQUEST \
-#         --commit-sha $TRAVIS_COMMIT \
-#         --vcs-branch $TRAVIS_BRANCH \
-#         --token $COVERALLS_REPO_TOKEN > coveralls.json
 
-#       curl "https://coveralls.io/api/v1/jobs" -F json_file=@coveralls.json
-#     fi
+after_success:
+  - |
+    if [ "$TRAVIS_RUST_VERSION" = "nightly" ]; then
+      grcov . -s . --binary-path ./target/debug/ -t coveralls+ --llvm --branch --ignore-not-existing \
+        --excl-start "#\[cfg\(test\)\]" \
+        --excl-br-start "#\[cfg\(test\)\]" \
+        --service-name travis-ci \
+        --service-job-id $TRAVIS_JOB_ID \
+        --service-pull-request $TRAVIS_PULL_REQUEST \
+        --commit-sha $TRAVIS_COMMIT \
+        --vcs-branch $TRAVIS_BRANCH \
+        --token $COVERALLS_REPO_TOKEN > coveralls.json
+
+      curl "https://coveralls.io/api/v1/jobs" -F json_file=@coveralls.json
+    fi
