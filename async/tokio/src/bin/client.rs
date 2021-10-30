@@ -1,5 +1,5 @@
 use tokio::net::TcpStream;
-use tokio::prelude::*;
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
 use std::net::SocketAddr;
 

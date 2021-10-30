@@ -1,7 +1,7 @@
 use futures::prelude::*;
 
 use tokio::net::{TcpListener, TcpStream};
-use tokio::prelude::*;
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
 use std::net::SocketAddr;
 
@@ -29,7 +29,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let addr = addr.parse::<SocketAddr>()?;
 
     // Bind the TCP listener
-    let mut listener = TcpListener::bind(&addr).await?;
+    let listener = TcpListener::bind(&addr).await?;
     println!("Listening on: {}", addr);
 
     #[allow(irrefutable_let_patterns)]

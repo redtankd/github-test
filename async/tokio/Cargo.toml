@@ -1,19 +1,12 @@
 [package]
-
-edition = "2018"
 name = "server"
 version = "0.1.0"
 authors = ["redtankd <redtankd@qq.com>"]
+edition = "2021"
 
 [dependencies]
-
 futures = "0.3.0"
-tokio = { version = "0.2.0", features = ["tcp", "udp", 
-    "io-util", # for AsyncReadExt and AsyncWriteExt
-    "time",
-    "macros", 
-    "dns", # for ToSocketAddrs' Implementations on String, etc
-]}
-tokio-util = { version = "0.2.0", features = ["udp", "codec"] }
-bytes = "0.5"
-env_logger = "0.6"
+tokio = { version = "1.13.0", features = ["full"]}
+tokio-util = { version = "0.6.9", features = ["full"] }
+bytes = "1.1.0"
+env_logger = "0.9.0"
