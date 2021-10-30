@@ -1,17 +1,14 @@
 [package]
-
-edition = '2018'
 name = "diesel_demo"
 version = "0.1.0"
 authors = ["redtankd <redtankd@qq.com>"]
+edition = '2021'
 
 [dependencies]
-
 diesel = "1.4.0"
-dotenv = "0.9.0"
+dotenv = "0.15.0"
 
 [features]
-
 # multiple database support
 default = ["postgres"]
 postgres = ["diesel/postgres"]

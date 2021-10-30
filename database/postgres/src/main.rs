@@ -35,25 +35,37 @@ fn _rows_to_json(rows: &Vec<Row>) -> Value {
 mod tests {
     use super::*;
     use dotenv::dotenv;
-    use postgres::{Client, NoTls};
+    use postgres::{config::Config, NoTls};
     use serde_json::json;
     use std::env;
+    use std::str::FromStr;
+    use url::Url;
 
     #[test]
     fn json() -> Result<(), postgres::error::Error> {
         dotenv().ok();
 
-        let host = env::var("POSTGRES_HOST").expect("POSTGRES_HOST must be set");
-        let port = env::var("PGPORT").expect("PGPORT must be set");
-        let user = env::var("POSTGRES_USER").expect("POSTGRES_USER must be set");
-        let pwd = env::var("POSTGRES_PASSWD").expect("POSTGRES_PASSWD must be set");
-        let db = env::var("POSTGRES_DB").expect("POSTGRES_DB must be set");
+        // let host = env::var("POSTGRES_HOST").expect("POSTGRES_HOST must be set");
+        // let port = env::var("PGPORT").expect("PGPORT must be set");
+        // let user = env::var("POSTGRES_USER").expect("POSTGRES_USER must be set");
+        // let pwd = env::var("POSTGRES_PASSWD").expect("POSTGRES_PASSWD must be set");
+        // let db = env::var("POSTGRES_DB").expect("POSTGRES_DB must be set");
+        // let database_url = format!(
+        //     "host={} port={} user={} password={} dbname={} connect_timeout=10 keepalives=0",
+        //     host, port, user, pwd, db
+        // );
 
-        let database_url = format!(
-            "host={} port={} user={} password={} dbname={} connect_timeout=10 keepalives=0",
-            host, port, user, pwd, db
-        );
-        let mut conn = Client::connect(&database_url, NoTls)?;
+        let mut database_url =
+            Url::parse(&env::var("POSTGRES_URL").expect("POSTGRES_URL must be set"))
+                .expect("POSTGRES_URL is wrong!");
+        let port = u16::from_str(&env::var("PGPORT").unwrap_or("5432".to_string()))
+            .expect("PGPORT is wrong!");
+        database_url
+            .set_port(Some(port))
+            .expect("PGPORT can't be set to POSTGRES_URL!");
+
+        let config = Config::from_str(database_url.as_str()).expect("wrong database_url!");
+        let mut conn = config.connect(NoTls)?;
 
         conn.execute("DROP TABLE IF EXISTS person", &[])?;
         conn.execute(
