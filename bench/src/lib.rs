@@ -236,8 +236,8 @@ mod bench {
 
         for i in 0..entity_count {
             for j in (i + 1)..entity_count {
-                let left_amount = rng.gen_range(1, 101) * 1000;
-                let right_amount = rng.gen_range(1, 101) * 1000;
+                let left_amount = rng.gen_range(1..101) * 1000;
+                let right_amount = rng.gen_range(1..101) * 1000;
                 let _ = limit_manager.insert(i, left_amount, j, right_amount);
             }
         }
@@ -253,15 +253,15 @@ mod bench {
         let mut rng = thread_rng();
 
         for _ in 0..queue_size {
-            let mut i = rng.gen_range(0, entity_count);
+            let mut i = rng.gen_range(0..entity_count);
             let j;
             if i + 1 == entity_count {
                 j = i;
                 i = j - 1;
             } else {
-                j = rng.gen_range(i + 1, entity_count);
+                j = rng.gen_range(i + 1.. entity_count);
             }
-            let amount = rng.gen_range(1, 51) * 1000;
+            let amount = rng.gen_range(1..51) * 1000;
             queue.push((i, j, amount));
         }
 
