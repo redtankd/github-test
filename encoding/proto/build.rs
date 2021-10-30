@@ -1,9 +1,9 @@
-extern crate protoc_rust;
+use protoc_rust;
 
 fn main() {
-	protoc_rust::run(protoc_rust::Args {
-        out_dir: "src/proto",
-        input: &["src/proto/data.proto"],
-        ..Default::default()
-    }).expect("protoc");
+    protoc_rust::Codegen::new()
+        .inputs(&["src/proto/data.proto"])
+        .out_dir("src/proto")
+        .run()
+        .expect("Running protoc failed.");
 }

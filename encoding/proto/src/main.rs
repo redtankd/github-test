@@ -1,9 +1,7 @@
-extern crate protobuf;
-
 mod proto;
 
 use protobuf::Message;
-use proto::data::FooBar;
+use crate::proto::data::FooBar;
 
 fn main() {
 	let mut bar = FooBar::new();
@@ -14,7 +12,7 @@ fn main() {
 	println!("old value = {:?}", bar);
 	let bytes = bar.write_to_bytes().unwrap();
 
-    let bar2: FooBar = protobuf::parse_from_bytes(bytes.as_slice()).unwrap();
+    let bar2: FooBar = Message::parse_from_bytes(bytes.as_slice()).unwrap();
     println!("new value = {:?}", bar2);
 
     assert_eq!(bar, bar2);
