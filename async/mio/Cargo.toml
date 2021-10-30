@@ -1,8 +1,8 @@
 [package]
-edition = "2018"
 name = "miotest"
 version = "0.1.0"
 authors = ["redtankd <redtankd@qq.com>"]
+edition = "2021"
 
 [lib]
 name = "miotest"

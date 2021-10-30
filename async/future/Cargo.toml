@@ -1,8 +1,8 @@
 [package]
-edition = "2018"
 name = "futures-test"
 version = "0.1.0"
 authors = ["redtankd <redtankd@qq.com>"]
+edition = "2021"
 
 [lib]
 name = "futures_test"
@@ -10,6 +10,6 @@ name = "futures_test"
 [dev-dependencies]
 
 futures = { version = "0.3.1", features = ["thread-pool"] }
-tokio = { version = "0.2.0", features = ["rt-core", "time", "macros"] }
+tokio = { version = "1.13.0", features = ["rt", "time", "macros"] }
 timer = "0.2"
 chrono = "0.4"

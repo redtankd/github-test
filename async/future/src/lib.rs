@@ -109,7 +109,7 @@ mod tests {
     fn job_on_time() {
         assert_eq!(
             1,
-            block_on(time::delay_for(Duration::from_millis(100)).map(|x| {
+            block_on(time::sleep(Duration::from_millis(100)).map(|x| {
                 assert_eq!((), x);
                 1
             }))
