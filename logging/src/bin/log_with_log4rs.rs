@@ -1,7 +1,4 @@
-#[macro_use] extern crate log;
-extern crate log4rs;
-
-use log::Level;
+use log::{debug, error, info, log_enabled, trace, warn, Level};
 
 fn main() {
     //TODO log4rs.yml is required in working dir.
@@ -17,16 +14,18 @@ fn main() {
 
     if log_enabled!(Level::Info) {
         let x = 3 * 4; // expensive computation
-        info!("the answer was: {}", x);
+        warn!("the level info is enabled! the answer was: {}", x);
     }
 
     info!("the log level was: {:?}", log::max_level());
 }
 
 mod target {
+    use log::{error, trace};
 
     pub fn log() {
-        error!("this is the default target");
+        trace!("this is a trace {}", "message");
+        error!("the default target is the module's path");
         error!(target: "wanted", "this is the wanted target");
     }
 }

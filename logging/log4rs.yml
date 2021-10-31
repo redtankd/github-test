@@ -24,11 +24,11 @@ root:
     - stdout
 
 loggers:
-  # Raise the maximum log level for events sent to the "app::backend::db" logger to "info"
+  # Raise the maximum log level for events sent to the "log_with_log4rs::target" logger to "info"
   log_with_log4rs::target:
     level: info
 
-  # Route log events sent to the "app::requests" logger to the "requests" appender,
+  # Route log events sent to the "warnted" logger to the "requests" appender,
   # and *not* the normal appenders installed at the root
   wanted:
     level: info
