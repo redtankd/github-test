@@ -6,10 +6,10 @@ members = [
 	"syntax/proc-macro-demo/hello-macro",
 
 	"async/future",
-	"async/tokio",
-	"async/mio",
-	
-	"net",
+
+	"net/std",
+	"net/tokio",
+	"net/mio",
 	
 	"encoding/proto",
 	
