@@ -61,34 +61,34 @@ extern crate test;
 //     // assert_eq!(1, order_slot1.lock().unwrap().ty);
 // }
 
-use std::thread;
+use std::sync::mpsc;
+use std::thread::{self, sleep};
 use std::time::Duration;
 
-use actix_rt::System;
-use actix_web::{web, App, HttpResponse, HttpServer};
+use actix_web::{rt::System, web, App, HttpResponse, HttpServer};
 
-fn main() -> std::io::Result<()> {
-    let runner = System::new();
-    let sys = System::current();
+#[actix_web::main]
+async fn main() {
+    let (tx, rx) = mpsc::channel();
 
     thread::spawn(move || {
-        thread::sleep(Duration::from_secs(10));
-        println!("System is required to stop!");
-        sys.stop();
+        let sys = System::new();
+
+        let srv = HttpServer::new(|| App::new().route("/", web::get().to(|| HttpResponse::Ok())))
+            .bind("127.0.0.1:8080")?
+            .shutdown_timeout(10) // <- Set shutdown timeout to 60 seconds
+            .run();
+
+        let _ = tx.send(srv.handle());
+        sys.block_on(srv)
     });
 
-    runner.block_on(async move {
-        HttpServer::new(|| {
-            App::new().service(web::resource("/").to(|| HttpResponse::Ok().body("data")))
-        })
-        .shutdown_timeout(5)
-        .workers(1)
-        .bind("127.0.0.1:8080")
-        .unwrap()
-        .run();
-    });
+    let srv = rx.recv().unwrap();
 
-    runner.run()
+    sleep(Duration::from_secs(10));
+
+    // stop server
+    srv.stop(true).await;
 }
 
 #[cfg(all(feature = "nightly", test))]
@@ -99,6 +99,7 @@ mod bench {
     use http::StatusCode;
     use std::io;
     use std::sync::{mpsc, Once};
+    use std::task::Poll;
     use std::thread;
     use test::Bencher;
 
@@ -118,21 +119,17 @@ mod bench {
         thread::spawn(move || {
             let runner = System::new();
 
-            // I think block_on() likes spawn() more.
-            runner.block_on(async move {
-                HttpServer::new(|| {
-                    App::new().service(web::resource("/").to(|| HttpResponse::Ok().body("ok")))
-                })
-                .shutdown_timeout(5)
-                .workers(1)
-                .bind("127.0.0.1:8080")
-                .unwrap()
-                .run();
-            });
+            let srv = HttpServer::new(|| {
+                App::new().service(web::resource("/").to(|| HttpResponse::Ok().body("ok")))
+            })
+            .shutdown_timeout(5)
+            .workers(1)
+            .bind("127.0.0.1:8080")
+            .unwrap()
+            .run();
 
-            let _ = tx.send(actix_rt::System::current());
-
-            let _ = runner.run();
+            let _ = tx.send(srv.handle());
+            runner.block_on(srv)
         });
 
         thread::sleep(std::time::Duration::from_millis(100));
@@ -146,8 +143,8 @@ mod bench {
                 .is_ok());
         });
 
-        let sys = rx.recv().unwrap();
-        sys.stop();
+        let srv = rx.recv().unwrap();
+        System::new().block_on(srv.stop(true));
 
         Ok(())
     }
