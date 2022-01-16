@@ -99,7 +99,6 @@ mod bench {
     use http::StatusCode;
     use std::io;
     use std::sync::{mpsc, Once};
-    use std::task::Poll;
     use std::thread;
     use test::Bencher;
 

@@ -352,6 +352,7 @@ mod bench {
     }
 
     #[bench]
+    #[ignore]
     fn bench_limit_manager(b: &mut Bencher) {
         setup();
 
@@ -397,6 +398,7 @@ mod bench {
     }
 
     #[bench]
+    #[ignore]
     fn bench_another_limit_manager(b: &mut Bencher) {
         setup();
 
