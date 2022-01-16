@@ -12,8 +12,9 @@ language: rust
 
 addons:
   # postgresql: "12"
-  # apt:
-  #   packages:
+  apt:
+    packages:
+      - unzip
   #     - postgresql-12
   hosts:
     # Custom Host Names for database demos' connection string in `.env` file. It is the same as localhost.
