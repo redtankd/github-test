@@ -62,6 +62,7 @@ install:
   # Installing Protobuf
   - curl -L "https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOBUF_VERSION/protoc-$PROTOBUF_VERSION-linux-aarch_64.zip" -o protobuf-release.zip
   - sudo unzip protobuf-release.zip -d /usr/local
+  - protoc --version
 
   # Installing diesel console command
   - cargo install diesel_cli
