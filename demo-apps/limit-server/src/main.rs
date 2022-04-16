@@ -95,7 +95,7 @@ async fn main() {
 mod bench {
     use super::*;
     use actix_rt::System;
-    use actix_web::{web, App, HttpResponse, HttpServer};
+    use actix_web::{web, App, HttpServer};
     use http::StatusCode;
     use std::io;
     use std::sync::{mpsc, Once};
@@ -118,14 +118,12 @@ mod bench {
         thread::spawn(move || {
             let runner = System::new();
 
-            let srv = HttpServer::new(|| {
-                App::new().service(web::resource("/").to(|| HttpResponse::Ok().body("ok")))
-            })
-            .shutdown_timeout(5)
-            .workers(1)
-            .bind("127.0.0.1:8080")
-            .unwrap()
-            .run();
+            let srv = HttpServer::new(|| App::new().route("/", web::get().to(|| async { "Ok" })))
+                .shutdown_timeout(5)
+                .workers(1)
+                .bind("127.0.0.1:8080")
+                .unwrap()
+                .run();
 
             let _ = tx.send(srv.handle());
             runner.block_on(srv)
