@@ -11,11 +11,9 @@ dist: focal
 language: rust
 
 addons:
-  # postgresql: "12"
   apt:
     packages:
       - unzip
-  #     - postgresql-12
   hosts:
     # Custom Host Names for database demos' connection string in `.env` file. It is the same as localhost.
     - postgres
@@ -28,9 +26,9 @@ env:
     # apps deployed here to avoid `sudo`
     - PATH=$HOME/.local/bin:$HOME/.cargo/bin:$PATH
     #
-    # postgresql' port and superuser. PGHOST couldn't be `postgres`, or psql required password.
-    # - PGPORT=5433
-    # - PGUSER=travis
+    # source-based coverage
+    - RUSTFLAGS="-Cinstrument-coverage"
+    - LLVM_PROFILE_FILE="coverage-%p-%m.profraw"
     #
     # protobuf
     - PROTOBUF_VERSION=3.19.3
@@ -39,15 +37,6 @@ jobs:
   include:
     - rust: stable
     - rust: nightly
-      env:
-        # source-based coverage
-        - RUSTFLAGS="-Zinstrument-coverage"
-        - LLVM_PROFILE_FILE="coverage-%p-%m.profraw"
-        #
-        # .gcda profile
-        # - CARGO_INCREMENTAL="0"
-        # - RUSTFLAGS="-Zinstrument-coverage -Zprofile -Zpanic_abort_tests -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off"
-        # - RUSTDOCFLAGS="-Cpanic=abort"
 
 cache: cargo
 
@@ -58,13 +47,13 @@ before_install:
 install:
   - rustup component add llvm-tools-preview
   - cargo install grcov
-
+  #
   # Installing Protobuf
   - curl -L "https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOBUF_VERSION/protoc-$PROTOBUF_VERSION-linux-aarch_64.zip" -o protobuf-release.zip
   - sudo unzip protobuf-release.zip -d /usr/local
   - sudo chmod 755 /usr/local/bin/protoc
   - protoc --version
-
+  #
   # Installing diesel console command
   - cargo install diesel_cli
 
@@ -81,7 +70,7 @@ script:
 
 after_success:
   - |
-    if [ "$TRAVIS_RUST_VERSION" = "nightly" ]; then
+    if [ "$TRAVIS_RUST_VERSION" = "stable" ]; then
       grcov . -s . --binary-path ./target/debug/ -t coveralls+ --llvm --branch --ignore-not-existing \
         --excl-start "#\[cfg\(test\)\]" \
         --excl-br-start "#\[cfg\(test\)\]" \
